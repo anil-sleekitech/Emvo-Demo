@@ -20,6 +20,17 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode  }[]>
   ],
 };
 
+
+// const handleUpload = () => {
+//   if (kbFile) {
+//     console.log("Uploading file:", kbFile.name);
+//   } else if (kbUrl.trim() !== "") {
+//     console.log("Uploading URL:", kbUrl);
+//   } else {
+//     toast.error("No file or URL provided");
+//   }
+// };
+
 interface ServiceSelectionProps {
   service: string;
   setService: (service: string) => void;
@@ -120,37 +131,126 @@ interface TaskInputProps {
   handleAddTask: () => void;
 }
 
+// function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps) {
+//   return (
+//     <div className="mb-6">
+//       <h2 className="text-lg font-semibold text-gray-700 mb-3">Add Task</h2>
+//       <div className="flex items-center">
+//         <input
+//           type="text"
+//           value={newTask}
+//           onChange={(e) => setNewTask(e.target.value)}
+//           placeholder="Enter a task"
+//           className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+//         />
+//         <button
+//           onClick={handleAddTask}
+//           className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-2 px-4 rounded-r-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
+//         >
+//           Add
+//         </button>
+//       </div>
+//       {tasks.length > 0 && (
+//         <ul className="mt-4 space-y-2">
+//           {tasks.map((task, index) => (
+//             <li key={index} className="bg-gray-100 p-2 rounded-lg text-gray-700">
+//               {task}
+//             </li>
+//           ))}
+//         </ul>
+//       )}
+//     </div>
+//   );
+// }
 function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps) {
   return (
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Add Task</h2>
-      <div className="flex items-center">
+      {tasks.length > 0 && (
+        <div className="mt-4 mb-4 y-2  border rounded-lg bg-gray-100 max-h-32 overflow-y-auto">
+          <ul className="space-y-2">
+            {tasks.map((task, index) => (
+              <li key={index} className="bg-white p-2 rounded-lg shadow-sm text-gray-700">
+                {task}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div className="flex items-center space-x-2">
         <input
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter a task"
-          className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 p-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           onClick={handleAddTask}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-2 px-4 rounded-r-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
         >
           Add
         </button>
       </div>
-      {tasks.length > 0 && (
-        <ul className="mt-4 space-y-2">
-          {tasks.map((task, index) => (
-            <li key={index} className="bg-gray-100 p-2 rounded-lg text-gray-700">
-              {task}
-            </li>
-          ))}
-        </ul>
-      )}
+      
     </div>
   );
 }
+
+// interface KBArticleUploadProps {
+//   kbFile: File | null;
+//   setKbFile: (file: File | null) => void;
+//   kbUrl: string;
+//   setKbUrl: (url: string) => void;
+//   handleUpload: () => void;
+// }
+
+// function KBArticleUpload({ kbFile, setKbFile, kbUrl, setKbUrl, handleUpload }: KBArticleUploadProps) {
+//   return (
+//     <div className="mb-6">
+//       <h2 className="text-lg font-semibold text-gray-700 mb-3">Upload KB Article</h2>
+//       <div className="flex flex-col space-y-4">
+//         {/* File Upload */}
+//         <input
+//           type="file"
+//           onChange={(e) => {
+//             if (e.target.files && e.target.files.length > 0) {
+//               setKbFile(e.target.files[0]);
+//             }
+//           }}
+//           className="p-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+//         />
+
+//         {/* Display Selected File Name */}
+//         {kbFile && (
+//           <p className="text-gray-600 text-sm">
+//             Selected File: <span className="font-medium">{kbFile.name}</span>
+//           </p>
+//         )}
+
+//         <span className="text-gray-700 text-center">or</span>
+
+//         {/* URL Input */}
+//         <input
+//           type="text"
+//           value={kbUrl}
+//           onChange={(e) => setKbUrl(e.target.value)}
+//           placeholder="Enter URL"
+//           className="p-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+//         />
+
+//         {/* Upload Button */}
+//         <button
+//           onClick={handleUpload}
+//           className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
+//         >
+//           Upload
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
 
 export default function Home() {
   const router = useRouter();
@@ -207,6 +307,13 @@ export default function Home() {
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
         <TaskInput tasks={tasks} newTask={newTask} setNewTask={setNewTask} handleAddTask={handleAddTask} />
+        {/* <KBArticleUpload 
+          kbFile={kbFile} 
+          setKbFile={setKbFile} 
+          kbUrl={kbUrl} 
+          setKbUrl={setKbUrl} 
+          handleUpload={handleUpload} 
+        /> */}
         <div className="flex justify-center mt-8">
           <button
             onClick={handleTryCall}
