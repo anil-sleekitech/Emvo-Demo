@@ -62,7 +62,7 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; prom
       name: "Survey & Feedback", 
       icon: <FaClipboardList size={30} color="#0284c7" />,
       promptKey: "getSurveyFeedbackPrompt"
-    },
+    }
   ],
   "Aviation": [
     { 
