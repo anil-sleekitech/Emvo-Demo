@@ -4,16 +4,30 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaMicrophone, FaUser, FaUserTie } from "react-icons/fa"; 
-
-
+import { 
+  FaMicrophone, 
+  FaUser, 
+  FaUserTie, 
+  FaHospital, 
+  FaPlane, 
+  FaFileInvoiceDollar, 
+  FaHeartbeat, 
+  FaCalendarCheck, 
+  FaFileMedical, 
+  FaAmbulance, 
+  FaClipboardList,
+  FaHeadset,
+  FaMedal
+} from "react-icons/fa"; 
+import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
+import { BsPersonVcard } from "react-icons/bs";
 
 // Define services and their corresponding options
 const serviceOptions: Record<string, { name: string; icon: React.ReactNode; systemPrompt?: string }[]> = {
   Insurance: [
     { 
       name: "Policy Information Retrieval", 
-      icon: <FaUserTie size={30} />,
+      icon: <FaFileInvoiceDollar size={30} color="#4f46e5" />,
       systemPrompt: `**Role:** AI-powered insurance agent specializing in policy information retrieval, helping customers understand their coverage details, policy terms, premium information, and answering general insurance questions.
 
 **Key Objectives:**
@@ -75,18 +89,18 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; syst
 - Answers specific coverage questions with precise details
 - Maintains a professional, helpful demeanor throughout the interaction`
     },
-    { name: "Health Claim Initiation", icon: <FaUserTie size={30} /> },
-    { name: "Policy Renewal Reminders", icon: <FaUserTie size={30} /> },
+    { name: "Health Claim Initiation", icon: <FaHeartbeat size={30} color="#ef4444" /> },
+    { name: "Policy Renewal Reminders", icon: <BsPersonVcard size={30} color="#0891b2" /> },
   ],
   "Healthcare": [
-    { name: "Appointment Booking", icon: <FaUser size={30} /> },
-    { name: "Diagnostic Centre Report Advisor", icon: <FaUser size={30} /> },
-    { name: "Emergency", icon: <FaUser size={30} /> },
-    { name: "Survey & Feedback", icon: <FaUser size={30} /> },
+    { name: "Appointment Booking", icon: <FaCalendarCheck size={30} color="#059669" /> },
+    { name: "Diagnostic Centre Report Advisor", icon: <FaFileMedical size={30} color="#8b5cf6" /> },
+    { name: "Emergency", icon: <FaAmbulance size={30} color="#dc2626" /> },
+    { name: "Survey & Feedback", icon: <FaClipboardList size={30} color="#0284c7" /> },
   ],
   "Aviation": [
-    { name: "Customer Support", icon: <FaUser size={30} /> },
-    { name: "Loyalty Program & Frequent Flyer Membership Renewal", icon: <FaUser size={30} /> }
+    { name: "Customer Support", icon: <FaHeadset size={30} color="#4338ca" /> },
+    { name: "Loyalty Program & Frequent Flyer Membership Renewal", icon: <FaMedal size={30} color="#f59e0b" /> }
   ]  
 };
 
@@ -112,7 +126,7 @@ function ServiceSelection({ service, setService, setPlace }: ServiceSelectionPro
   return (
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Industry</h2>
-      <div className="flex space-x-4">
+      <div className="grid grid-cols-3 gap-4">
         {Object.keys(serviceOptions).map((serviceName) => (
           <div
             key={serviceName}
@@ -121,10 +135,12 @@ function ServiceSelection({ service, setService, setPlace }: ServiceSelectionPro
               setPlace(""); // reset place on change
             }}
             className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              service === serviceName ? "border-blue-500" : "border-gray-300"
+              service === serviceName ? "border-blue-500 bg-blue-50" : "border-gray-300"
             }`}
           >
-            {serviceName === "Insurance" ? <FaUserTie /> : <FaUser />}
+            {serviceName === "Insurance" ? <FaUserTie size={24} color="#4f46e5" /> : 
+             serviceName === "Healthcare" ? <FaHospital size={24} color="#059669" /> :
+             <FaPlane size={24} color="#0284c7" />}
             <span className="mt-2 text-gray-800">{serviceName}</span>
           </div>
         ))}
@@ -144,13 +160,13 @@ function PlaceSelection({ service, place, setPlace }: PlaceSelectionProps) {
   return (
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Agent</h2>
-      <div className="flex space-x-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {serviceOptions[service].map((option) => (
           <div
             key={option.name}
             onClick={() => setPlace(option.name)}
             className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              place === option.name ? "border-blue-500" : "border-gray-300"
+              place === option.name ? "border-blue-500 bg-blue-50" : "border-gray-300"
             }`}
           >
             {option.icon}
@@ -169,10 +185,10 @@ interface VoiceSelectionProps {
 
 function VoiceSelection({ voice, setVoice }: VoiceSelectionProps) {
   const voices = [
-    { id: "e6fce4ac-da54-43e9-8fb2-66de86f72a5b", label: "Richard-English", icon: <FaUser size={30} /> },
-    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-Urdu", icon: <FaUser size={30} /> },
-    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-Urdu", icon: <FaUser size={30} /> },
-    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-Urdu", icon: <FaUser size={30} /> },
+    { id: "e6fce4ac-da54-43e9-8fb2-66de86f72a5b", label: "Richard-English", icon: <MdRecordVoiceOver size={30} color="#4f46e5" /> },
+    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-Urdu", icon: <MdOutlineTranslate size={30} color="#0891b2" /> },
+    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-Urdu", icon: <MdOutlineTranslate size={30} color="#db2777" /> },
+    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-Urdu", icon: <MdOutlineTranslate size={30} color="#7c3aed" /> },
   ];
   
   // Set a default voice if none is selected
@@ -185,7 +201,7 @@ function VoiceSelection({ voice, setVoice }: VoiceSelectionProps) {
   return (
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Voice</h2>
-      <div className="flex space-x-4 overflow-x-auto pb-2">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {voices.map((v) => (
           <div
             key={v.id}
@@ -221,10 +237,10 @@ function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Special Instructions</h2>
       {tasks.length > 0 && (
-        <div className="mt-4 mb-4 y-2  border rounded-lg bg-gray-100 max-h-32 overflow-y-auto">
+        <div className="mt-4 mb-4 border rounded-lg bg-gray-50 p-3 max-h-40 overflow-y-auto">
           <ul className="space-y-2">
             {tasks.map((task, index) => (
-              <li key={index} className="bg-white p-2 rounded-lg shadow-sm text-gray-700">
+              <li key={index} className="bg-white p-3 rounded-lg shadow-sm text-gray-700 border border-gray-100">
                 {task}
               </li>
             ))}
@@ -236,17 +252,17 @@ function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Enter a task"
-          className="flex-1 p-2 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter special instructions for the AI agent"
+          className="flex-1 p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
         />
         <button
           onClick={handleAddTask}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
         >
           Add
         </button>
       </div>
-      
     </div>
   );
 }
@@ -334,8 +350,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 p-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Emvo AI Demo</h1>
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
