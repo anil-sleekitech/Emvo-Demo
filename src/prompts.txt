@@ -1,0 +1,14 @@
+src/
+  prompts/
+    insurance/
+      policy-information.ts
+      health-claim.ts
+      policy-renewal.ts
+    healthcare/
+      appointment-booking.ts
+      diagnostic-report.ts
+      emergency.ts
+      survey-feedback.ts
+    aviation/
+      customer-support.ts
+      loyalty-program.ts
