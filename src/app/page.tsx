@@ -328,7 +328,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Emvo DemoBox</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Emvo DemoBox!</h1>
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
