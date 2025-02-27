@@ -6,17 +6,17 @@ export const voices = [
   },
   { 
     id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", 
-    label: "Krishna-Hindi-Urdu", 
+    label: "Krishna-Hindi-IndianEnglish", 
     introduction: "I am Krishna, an AI assistant fluent in Hindi and Urdu."
   },
   { 
     id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", 
-    label: "Riya-Hindi-Urdu", 
+    label: "Riya-Hindi-IndianEnglish", 
     introduction: "I am Riya, an AI assistant fluent in Hindi and Urdu."
   },
   { 
     id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", 
-    label: "Anjali-Hindi-Urdu", 
+    label: "Anjali-Hindi-IndianEnglish", 
     introduction: "I am Anjali, an AI assistant fluent in Hindi and Urdu."
   },
 ]; 

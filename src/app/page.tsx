@@ -125,9 +125,9 @@ interface VoiceSelectionProps {
 function VoiceSelection({ voice, setVoice }: VoiceSelectionProps) {
   const voices = [
     { id: "e6fce4ac-da54-43e9-8fb2-66de86f72a5b", label: "Richard-English", icon: <MdRecordVoiceOver size={30} color="#4f46e5" /> },
-    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-Urdu", icon: <MdOutlineTranslate size={30} color="#0891b2" /> },
-    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-Urdu", icon: <MdOutlineTranslate size={30} color="#db2777" /> },
-    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-Urdu", icon: <MdOutlineTranslate size={30} color="#7c3aed" /> },
+    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#0891b2" /> },
+    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#db2777" /> },
+    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#7c3aed" /> },
   ];
   
   // Set a default voice if none is selected
