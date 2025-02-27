@@ -21,6 +21,7 @@ import {
 import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
 import { BsPersonVcard } from "react-icons/bs";
 import { prompts } from "../prompts";
+import { voices } from "../config/voices";
 
 // Define services and their corresponding options
 const serviceOptions: Record<string, { name: string; icon: React.ReactNode; promptKey?: string }[]> = {
