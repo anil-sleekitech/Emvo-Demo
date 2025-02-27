@@ -28,20 +28,52 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; prom
     { 
       name: "Policy Information Retrieval", 
       icon: <FaFileInvoiceDollar size={30} color="#4f46e5" />,
-      promptKey: "policyInformation"
+      promptKey: "getPolicyInformationPrompt"
     },
-    { name: "Health Claim Initiation", icon: <FaHeartbeat size={30} color="#ef4444" /> },
-    { name: "Policy Renewal Reminders", icon: <BsPersonVcard size={30} color="#0891b2" /> },
+    { 
+      name: "Health Claim Initiation", 
+      icon: <FaHeartbeat size={30} color="#ef4444" />,
+      promptKey: "getHealthClaimPrompt"
+    },
+    { 
+      name: "Policy Renewal Reminders", 
+      icon: <BsPersonVcard size={30} color="#0891b2" />,
+      promptKey: "getPolicyRenewalPrompt"
+    },
   ],
   "Healthcare": [
-    { name: "Appointment Booking", icon: <FaCalendarCheck size={30} color="#059669" /> },
-    { name: "Diagnostic Centre Report Advisor", icon: <FaFileMedical size={30} color="#8b5cf6" /> },
-    { name: "Emergency", icon: <FaAmbulance size={30} color="#dc2626" /> },
-    { name: "Survey & Feedback", icon: <FaClipboardList size={30} color="#0284c7" /> },
+    { 
+      name: "Appointment Booking", 
+      icon: <FaCalendarCheck size={30} color="#059669" />,
+      promptKey: "getAppointmentBookingPrompt"
+    },
+    { 
+      name: "Diagnostic Centre Report Advisor", 
+      icon: <FaFileMedical size={30} color="#8b5cf6" />,
+      promptKey: "getDiagnosticReportPrompt"
+    },
+    { 
+      name: "Emergency", 
+      icon: <FaAmbulance size={30} color="#dc2626" />,
+      promptKey: "getEmergencyPrompt"
+    },
+    { 
+      name: "Survey & Feedback", 
+      icon: <FaClipboardList size={30} color="#0284c7" />,
+      promptKey: "getSurveyFeedbackPrompt"
+    },
   ],
   "Aviation": [
-    { name: "Customer Support", icon: <FaHeadset size={30} color="#4338ca" /> },
-    { name: "Loyalty Program & Frequent Flyer Membership Renewal", icon: <FaMedal size={30} color="#f59e0b" /> }
+    { 
+      name: "Customer Support", 
+      icon: <FaHeadset size={30} color="#4338ca" />,
+      promptKey: "getCustomerSupportPrompt"
+    },
+    { 
+      name: "Loyalty Program & Frequent Flyer Membership Renewal", 
+      icon: <FaMedal size={30} color="#f59e0b" />,
+      promptKey: "getLoyaltyProgramPrompt"
+    }
   ]  
 };
 
@@ -222,19 +254,13 @@ export default function Home() {
 
   const handleTryCall = async () => {
     if (!service || !place) {
-      toast.error("Please select an industry and agent before proceeding.");
-      return;
-    }
-    
-    // Ensure a voice is selected
-    if (!voice) {
-      toast.error("Please select a voice for the AI agent.");
+      toast.error("Please select both a service and a place");
       return;
     }
 
     const currentTime = new Date().toISOString();
     
-    // Find the selected service option to get its prompt key
+    // Find the selected option
     const selectedOption = serviceOptions[service].find(option => option.name === place);
     
     // Get the system prompt from the prompts object
@@ -242,7 +268,11 @@ export default function Home() {
     if (selectedOption?.promptKey && service.toLowerCase() in prompts) {
       const servicePrompts = prompts[service.toLowerCase() as keyof typeof prompts];
       if (selectedOption.promptKey in servicePrompts) {
-        systemPrompt = servicePrompts[selectedOption.promptKey as keyof typeof servicePrompts];
+        // Call the function with the voice ID to get the voice-specific prompt
+        const promptFunction = servicePrompts[selectedOption.promptKey as keyof typeof servicePrompts];
+        if (typeof promptFunction === 'function') {
+          systemPrompt = promptFunction(voice);
+        }
       }
     }
 

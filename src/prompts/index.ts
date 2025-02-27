@@ -1,17 +1,12 @@
 // Insurance prompts
-import { policyInformationPrompt } from './insurance/policy-information';
+import { insurancePrompts } from './insurance';
+import { healthcarePrompts } from './healthcare';
+import { aviationPrompts } from './aviation';
 // Import other prompts as needed
 
 // Export all prompts
 export const prompts = {
-  insurance: {
-    policyInformation: policyInformationPrompt,
-    // Add other insurance prompts
-  },
-  healthcare: {
-    // Add healthcare prompts
-  },
-  aviation: {
-    // Add aviation prompts
-  }
+  insurance: insurancePrompts,
+  healthcare: healthcarePrompts,
+  aviation: aviationPrompts
 }; 
