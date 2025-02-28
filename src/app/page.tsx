@@ -42,7 +42,7 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; prom
       promptKey: "getPolicyRenewalPrompt"
     },
   ],
-  "Healthcare": [
+  Healthcare: [
     { 
       name: "Appointment Booking", 
       icon: <FaCalendarCheck size={30} color="#059669" />,
@@ -64,7 +64,7 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; prom
       promptKey: "getSurveyFeedbackPrompt"
     }
   ],
-  "Aviation": [
+  Aviation: [
     { 
       name: "Customer Support", 
       icon: <FaHeadset size={30} color="#4338ca" />,
