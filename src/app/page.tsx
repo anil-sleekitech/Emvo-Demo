@@ -22,6 +22,12 @@ import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
 import { BsPersonVcard } from "react-icons/bs";
 import { prompts } from "../prompts";
 import { voices } from "../config/voices";
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Replace the worker initialization with this
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.js';
+}
 
 // Define services and their corresponding options
 const serviceOptions: Record<string, { name: string; icon: React.ReactNode; promptKey?: string }[]> = {
@@ -238,6 +244,158 @@ function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps
   );
 }
 
+interface FileUploadProps {
+  onFileContent: (content: string) => void;
+}
+
+function FileUpload({ onFileContent }: FileUploadProps) {
+  const [loading, setLoading] = useState(false);
+  const [fileName, setFileName] = useState<string>("");
+  const [url, setUrl] = useState<string>("");
+  const [contentPreview, setContentPreview] = useState<string>("");
+
+  const readPdfFile = async (file: File) => {
+    try {
+      setLoading(true);
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: { str: string }) => item.str)
+          .join(' ');
+        fullText += pageText + '\n';
+      }
+      
+      onFileContent(fullText);
+      setContentPreview(fullText.slice(0, 200) + '...');
+      setUrl(''); // Clear URL when PDF is uploaded
+      toast.success('PDF successfully processed!');
+    } catch (error) {
+      console.error('Error reading PDF:', error);
+      toast.error('Error processing PDF file');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUrlContent = async () => {
+    if (!url.trim()) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch URL content');
+      
+      const text = await response.text();
+      // Basic HTML to text conversion
+      const textContent = text.replace(/<[^>]*>/g, ' ')
+                             .replace(/\s+/g, ' ')
+                             .trim();
+      
+      onFileContent(textContent);
+      setContentPreview(textContent.slice(0, 200) + '...');
+      setFileName(''); // Clear filename when URL is processed
+      toast.success('URL content successfully processed!');
+    } catch (error) {
+      console.error('Error fetching URL:', error);
+      toast.error('Error processing URL');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file');
+      return;
+    }
+
+    setFileName(file.name);
+    await readPdfFile(file);
+  };
+
+  return (
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold text-gray-700 mb-3">Upload Document or Enter URL</h2>
+      
+      {/* PDF Upload Section */}
+      <div className="flex items-center justify-center w-full mb-4">
+        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+            {loading ? (
+              <div className="text-gray-500">Processing...</div>
+            ) : (
+              <>
+                <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p className="mb-2 text-sm text-gray-500">
+                  <span className="font-semibold">Click to upload PDF</span> or drag and drop
+                </p>
+                {fileName && (
+                  <p className="text-sm text-gray-500">{fileName}</p>
+                )}
+              </>
+            )}
+          </div>
+          <input 
+            type="file" 
+            className="hidden" 
+            accept=".pdf"
+            onChange={handleFileChange}
+            disabled={loading}
+          />
+        </label>
+      </div>
+
+      {/* OR Divider */}
+      <div className="relative flex py-5 items-center">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="flex-shrink mx-4 text-gray-600">OR</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      {/* URL Input Section */}
+      <div className="flex items-center space-x-2 mb-4">
+        <input
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Enter URL to fetch content"
+          className="flex-1 p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={fetchUrlContent}
+          disabled={loading}
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 disabled:opacity-50"
+        >
+          Fetch
+        </button>
+      </div>
+
+      {/* Content Preview */}
+      {contentPreview && (
+        <div className="mt-4">
+          <h3 className="text-md font-semibold text-gray-700 mb-2">Content Preview:</h3>
+          <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-600">
+            {contentPreview}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const [service, setService] = useState("");
@@ -245,6 +403,7 @@ export default function Home() {
   const [place, setPlace] = useState("");
   const [tasks, setTasks] = useState<string[]>([]); // Explicitly type as string array
   const [newTask, setNewTask] = useState("");
+  const [pdfContent, setPdfContent] = useState<string>("");
 
   const handleAddTask = () => {
     if (newTask.trim()) {
@@ -284,7 +443,8 @@ export default function Home() {
       place,
       time: currentTime,
       tasks,
-      systemPrompt
+      systemPrompt,
+      pdfContent
     });
 
     try {
@@ -301,7 +461,8 @@ export default function Home() {
             place, 
             time: currentTime, 
             tasks,
-            systemPrompt 
+            systemPrompt,
+            pdfContent
           }),
         }
       );
@@ -333,6 +494,7 @@ export default function Home() {
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
         <TaskInput tasks={tasks} newTask={newTask} setNewTask={setNewTask} handleAddTask={handleAddTask} />
+        <FileUpload onFileContent={setPdfContent} />
         <div className="flex justify-center mt-8">
           <button
             onClick={handleTryCall}

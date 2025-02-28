@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/pdfjs-dist": "^2.10.377",
     "next": "15.1.7",
+    "pdfjs-dist": "^4.10.38",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
