@@ -75,7 +75,14 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; prom
       icon: <FaMedal size={30} color="#f59e0b" />,
       promptKey: "getLoyaltyProgramPrompt"
     }
-  ]  
+  ],
+  Custom: [
+    {
+      name: "Custom Agent",
+      icon: <MdRecordVoiceOver size={30} color="#6366f1" />,
+      promptKey: "customPrompt"
+    }
+  ]
 };
 
 // const handleUpload = () => {
@@ -98,7 +105,7 @@ function ServiceSelection({ service, setService, setPlace }: ServiceSelectionPro
   return (
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Industry</h2>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {Object.keys(serviceOptions).map((serviceName) => (
           <div
             key={serviceName}
@@ -112,7 +119,8 @@ function ServiceSelection({ service, setService, setPlace }: ServiceSelectionPro
           >
             {serviceName === "Insurance" ? <FaUserTie size={24} color="#4f46e5" /> : 
              serviceName === "Healthcare" ? <FaHospital size={24} color="#059669" /> :
-             <FaPlane size={24} color="#0284c7" />}
+             serviceName === "Aviation" ? <FaPlane size={24} color="#0284c7" /> :
+             <MdRecordVoiceOver size={24} color="#6366f1" />}
             <span className="mt-2 text-gray-800">{serviceName}</span>
           </div>
         ))}
@@ -238,6 +246,23 @@ function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps
   );
 }
 
+// Custom prompt input component
+function CustomPromptInput() {
+  const [customSystemPrompt, setCustomSystemPrompt] = useState("");
+
+  return (
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold text-gray-700 mb-3">Custom System Prompt</h2>
+      <textarea
+        value={customSystemPrompt}
+        onChange={(e) => setCustomSystemPrompt(e.target.value)}
+        placeholder="Enter your custom system prompt here..."
+        className="w-full h-64 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const [service, setService] = useState("");
@@ -245,6 +270,8 @@ export default function Home() {
   const [place, setPlace] = useState("");
   const [tasks, setTasks] = useState<string[]>([]); // Explicitly type as string array
   const [newTask, setNewTask] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [customSystemPrompt, setCustomSystemPrompt] = useState("");
 
   const handleAddTask = () => {
     if (newTask.trim()) {
@@ -253,26 +280,34 @@ export default function Home() {
     }
   };
 
-  const handleTryCall = async () => {
-    if (!service || !place) {
-      toast.error("Please select both a service and a place");
-      return;
-    }
-
-    const currentTime = new Date().toISOString();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Find the selected option
-    const selectedOption = serviceOptions[service].find(option => option.name === place);
+    // Set loading state
+    setIsLoading(true);
     
-    // Get the system prompt from the prompts object
+    // Get current time
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString();
+    
+    // Determine which prompt to use based on service and option
     let systemPrompt = "";
-    if (selectedOption?.promptKey && service.toLowerCase() in prompts) {
-      const servicePrompts = prompts[service.toLowerCase() as keyof typeof prompts];
-      if (selectedOption.promptKey in servicePrompts) {
-        // Call the function with the voice ID to get the voice-specific prompt
-        const promptFunction = servicePrompts[selectedOption.promptKey as keyof typeof servicePrompts];
-        if (typeof promptFunction === 'function') {
-          systemPrompt = promptFunction(voice);
+    
+    if (service === "Custom" && customSystemPrompt) {
+      // Use the custom prompt directly
+      systemPrompt = customSystemPrompt;
+    } else if (place && serviceOptions[service].find(option => option.name === place)) {
+      // Get the appropriate service prompts
+      const selectedOption = serviceOptions[service].find(option => option.name === place);
+      if (selectedOption && selectedOption.promptKey) {
+        const servicePrompts = prompts[service.toLowerCase()];
+        
+        if (selectedOption.promptKey in servicePrompts) {
+          // Call the function with the voice ID to get the voice-specific prompt
+          const promptFunction = servicePrompts[selectedOption.promptKey as keyof typeof servicePrompts];
+          if (typeof promptFunction === 'function') {
+            systemPrompt = promptFunction(voice);
+          }
         }
       }
     }
@@ -322,6 +357,8 @@ export default function Home() {
     } catch (error) {
       console.error("Error initiating call:", error);
       toast.error("An error occurred while trying to initiate the call. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -332,10 +369,11 @@ export default function Home() {
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
+        <CustomPromptInput />
         <TaskInput tasks={tasks} newTask={newTask} setNewTask={setNewTask} handleAddTask={handleAddTask} />
         <div className="flex justify-center mt-8">
           <button
-            onClick={handleTryCall}
+            onClick={handleSubmit}
             className="flex items-center bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105"
           >
             <FaMicrophone className="mr-2" />
