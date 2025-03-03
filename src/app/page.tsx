@@ -247,9 +247,9 @@ function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps
 }
 
 // Custom prompt input component
-function CustomPromptInput() {
-  const [customSystemPrompt, setCustomSystemPrompt] = useState("");
-
+function CustomPromptInput({ service, customSystemPrompt, setCustomSystemPrompt }) {
+  if (service !== "Custom") return null;
+  
   return (
     <div className="mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-3">Custom System Prompt</h2>
@@ -293,7 +293,7 @@ export default function Home() {
     // Determine which prompt to use based on service and option
     let systemPrompt = "";
     
-    if (service === "Custom" && customSystemPrompt) {
+    if (service === "Custom") {
       // Use the custom prompt directly
       systemPrompt = customSystemPrompt;
     } else if (place && serviceOptions[service].find(option => option.name === place)) {
@@ -369,7 +369,11 @@ export default function Home() {
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
-        <CustomPromptInput />
+        <CustomPromptInput 
+          service={service} 
+          customSystemPrompt={customSystemPrompt} 
+          setCustomSystemPrompt={setCustomSystemPrompt} 
+        />
         <TaskInput tasks={tasks} newTask={newTask} setNewTask={setNewTask} handleAddTask={handleAddTask} />
         <div className="flex justify-center mt-8">
           <button
