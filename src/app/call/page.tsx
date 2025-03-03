@@ -222,9 +222,9 @@ function CallContent() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-spiral-bg p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Call in Progress</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#9351E2] via-[#BC45FF] to-[#1B0D2D] p-4">
+      <div className="bg-gradient-to-br from-white to-[#f8f9ff] p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+        <h1 className="text-3xl font-bold text-[#1B0D2D] mb-6">Call in Progress</h1>
         
         {/* Simplified Audio Visualization - Pure Sine Wave */}
         <div className="mb-6">
@@ -250,22 +250,22 @@ function CallContent() {
           </div>
         </div>
         
-        <p className="mb-4 text-xl flex items-center justify-center">
-          <span className="inline-block w-3 h-3 rounded-full mr-2" style={{ backgroundColor: statusColor }}></span>
-          Status: {statusLabel}
+        <p className="flex items-center justify-center mb-6">
+          <span className="inline-block w-3 h-3 rounded-full mr-2 animate-pulse" style={{ backgroundColor: statusColor }}></span>
+          <span className="text-lg font-medium text-[#1B0D2D]">Status: {statusLabel}</span>
         </p>
         
         <button
           onClick={handleEndCall}
-          className="bg-gradient-to-r from-spiral-purple to-spiral-pink text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 mb-4"
+          className="bg-gradient-to-r from-[#9351E2] to-[#EE7794] text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 mb-4 w-full max-w-xs mx-auto"
         >
           End Call
         </button>
         
-        <div className="mt-2">
+        <div className="mt-4">
           <button 
             onClick={handleHomeClick}
-            className="text-spiral-purple hover:text-spiral-pink transition-colors"
+            className="text-[#9351E2] hover:text-[#EE7794] transition-colors font-medium"
           >
             Back to Home
           </button>

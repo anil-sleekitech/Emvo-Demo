@@ -19,7 +19,7 @@ import {
   FaHeadset,
   FaMedal,
   FaPlus
-} from "react-icons/fa"; 
+} from "react-icons/fa";
 import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
 import { BsPersonVcard } from "react-icons/bs";
 import { prompts } from "../prompts";

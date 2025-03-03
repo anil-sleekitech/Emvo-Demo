@@ -89,9 +89,9 @@ function TranscriptContent() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-spiral-bg p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#9351E2] via-[#BC45FF] to-[#1B0D2D] p-4">
+      <div className="bg-gradient-to-br from-white to-[#f8f9ff] p-8 rounded-xl shadow-lg w-full max-w-md text-center">
+        <h1 className="text-3xl font-bold text-[#1B0D2D] mb-6">
           Call Transcript
         </h1>
         
@@ -99,26 +99,25 @@ function TranscriptContent() {
         <button
           onClick={handleGetTranscript}
           disabled={isLoading}
-          className="bg-gradient-to-r from-spiral-purple to-spiral-pink text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 mb-4"
+          className="bg-gradient-to-r from-[#9351E2] to-[#EE7794] text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 mb-4 w-full max-w-xs mx-auto"
         >
           {isLoading ? "Loading..." : "Get Transcript"}
         </button>
         
         {/* Display Transcript */}
         {transcript && (
-          <div className="bg-gray-100 p-4 rounded-lg text-left mt-4 mb-4 max-h-80 overflow-y-auto">
-            <pre className="text-gray-800 whitespace-pre-wrap font-sans">{transcript}</pre>
+          <div className="bg-gray-50 p-4 rounded-lg text-left mt-4 mb-4 max-h-80 overflow-y-auto border border-gray-200">
+            <pre className="text-[#1B0D2D] whitespace-pre-wrap font-sans">{transcript}</pre>
           </div>
         )}
         
-        <div className="mt-4 flex justify-center space-x-4">
-          <a 
-            href="/"
+        <div className="mt-4">
+          <button 
             onClick={handleBackToHome}
-            className="text-spiral-purple hover:text-spiral-pink transition-colors"
+            className="text-[#9351E2] hover:text-[#EE7794] transition-colors font-medium"
           >
             Back to Home
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -127,7 +126,7 @@ function TranscriptContent() {
 
 export default function TranscriptPage() {
   return (
-    <Suspense fallback={<div>Loading transcript...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <TranscriptContent />
     </Suspense>
   );
