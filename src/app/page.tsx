@@ -246,6 +246,22 @@ function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps
   );
 }
 
+// Move this component outside of Home
+function CustomerNameInput({ customerName, setCustomerName }) {
+  return (
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold text-gray-700 mb-3">Customer Name</h2>
+      <input
+        type="text"
+        value={customerName}
+        onChange={(e) => setCustomerName(e.target.value)}
+        placeholder="Enter customer name"
+        className="w-full p-3 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  );
+}
+
 // Custom prompt input component
 function CustomPromptInput({ service, customSystemPrompt, setCustomSystemPrompt }) {
   if (service !== "Custom") return null;
@@ -257,7 +273,7 @@ function CustomPromptInput({ service, customSystemPrompt, setCustomSystemPrompt 
         value={customSystemPrompt}
         onChange={(e) => setCustomSystemPrompt(e.target.value)}
         placeholder="Enter your custom system prompt here..."
-        className="w-full h-64 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full h-64 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
       />
     </div>
   );
@@ -272,6 +288,7 @@ export default function Home() {
   const [newTask, setNewTask] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [customSystemPrompt, setCustomSystemPrompt] = useState("");
+  const [customerName, setCustomerName] = useState("Vaibhav Anand"); // Set default name
 
   const handleAddTask = () => {
     if (newTask.trim()) {
@@ -294,8 +311,13 @@ export default function Home() {
     let systemPrompt = "";
     
     if (service === "Custom") {
-      // Use the custom prompt directly
-      systemPrompt = customSystemPrompt;
+      // Use the custom prompt with voice introduction
+      const customPromptFunction = prompts.custom.customPrompt;
+      if (typeof customPromptFunction === 'function') {
+        systemPrompt = customPromptFunction(voice, customSystemPrompt);
+      } else {
+        systemPrompt = customSystemPrompt;
+      }
     } else if (place && serviceOptions[service].find(option => option.name === place)) {
       // Get the appropriate service prompts
       const selectedOption = serviceOptions[service].find(option => option.name === place);
@@ -311,6 +333,11 @@ export default function Home() {
         }
       }
     }
+    
+    // Add customer name to the beginning of the prompt if provided
+    if (customerName.trim()) {
+      systemPrompt = `Customer Name: ${customerName}\n\n${systemPrompt}`;
+    }
 
     // Log the data being sent for debugging
     console.log("Sending data:", {
@@ -319,6 +346,7 @@ export default function Home() {
       place,
       time: currentTime,
       tasks,
+      customerName,
       systemPrompt
     });
 
@@ -336,6 +364,7 @@ export default function Home() {
             place, 
             time: currentTime, 
             tasks,
+            customerName,
             systemPrompt 
           }),
         }
@@ -369,6 +398,10 @@ export default function Home() {
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
+        <CustomerNameInput 
+          customerName={customerName} 
+          setCustomerName={setCustomerName} 
+        />
         <CustomPromptInput 
           service={service} 
           customSystemPrompt={customSystemPrompt} 
