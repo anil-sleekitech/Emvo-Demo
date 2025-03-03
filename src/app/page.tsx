@@ -16,7 +16,8 @@ import {
   FaAmbulance, 
   FaClipboardList,
   FaHeadset,
-  FaMedal
+  FaMedal,
+  FaPlus
 } from "react-icons/fa"; 
 import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
 import { BsPersonVcard } from "react-icons/bs";
@@ -28,58 +29,58 @@ const serviceOptions: Record<string, { name: string; icon: React.ReactNode; prom
   Insurance: [
     { 
       name: "Policy Information Retrieval", 
-      icon: <FaFileInvoiceDollar size={30} color="#4f46e5" />,
+      icon: <FaFileInvoiceDollar size={30} color="#9351E2" />,
       promptKey: "getPolicyInformationPrompt"
     },
     { 
       name: "Health Claim Initiation", 
-      icon: <FaHeartbeat size={30} color="#ef4444" />,
+      icon: <FaHeartbeat size={30} color="#BC45FF" />,
       promptKey: "getHealthClaimPrompt"
     },
     { 
       name: "Policy Renewal Reminders", 
-      icon: <BsPersonVcard size={30} color="#0891b2" />,
+      icon: <BsPersonVcard size={30} color="#EE7794" />,
       promptKey: "getPolicyRenewalPrompt"
     },
   ],
   Healthcare: [
     { 
       name: "Appointment Booking", 
-      icon: <FaCalendarCheck size={30} color="#059669" />,
+      icon: <FaCalendarCheck size={30} color="#9351E2" />,
       promptKey: "getAppointmentBookingPrompt"
     },
     { 
       name: "Diagnostic Centre Report Advisor", 
-      icon: <FaFileMedical size={30} color="#8b5cf6" />,
+      icon: <FaFileMedical size={30} color="#BC45FF" />,
       promptKey: "getDiagnosticReportPrompt"
     },
     { 
       name: "Emergency", 
-      icon: <FaAmbulance size={30} color="#dc2626" />,
+      icon: <FaAmbulance size={30} color="#EE7794" />,
       promptKey: "getEmergencyPrompt"
     },
     { 
       name: "Survey & Feedback", 
-      icon: <FaClipboardList size={30} color="#0284c7" />,
+      icon: <FaClipboardList size={30} color="#1B0D2D" />,
       promptKey: "getSurveyFeedbackPrompt"
     }
   ],
   Aviation: [
     { 
       name: "Customer Support", 
-      icon: <FaHeadset size={30} color="#4338ca" />,
+      icon: <FaHeadset size={30} color="#9351E2" />,
       promptKey: "getCustomerSupportPrompt"
     },
     { 
       name: "Loyalty Program & Frequent Flyer Membership Renewal", 
-      icon: <FaMedal size={30} color="#f59e0b" />,
+      icon: <FaMedal size={30} color="#BC45FF" />,
       promptKey: "getLoyaltyProgramPrompt"
     }
   ],
   Custom: [
     {
       name: "Custom Agent",
-      icon: <MdRecordVoiceOver size={30} color="#6366f1" />,
+      icon: <MdRecordVoiceOver size={30} color="#9351E2" />,
       promptKey: "customPrompt"
     }
   ]
@@ -101,10 +102,26 @@ interface ServiceSelectionProps {
   setPlace: (place: string) => void;
 }
 
+// Move this component outside of Home
+function CustomerNameInput({ customerName, setCustomerName }) {
+  return (
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Customer Name</h2>
+      <input
+        type="text"
+        value={customerName}
+        onChange={(e) => setCustomerName(e.target.value)}
+        placeholder="Enter customer name"
+        className="w-full p-3 border border-[#9351E2]/30 rounded-lg text-[#1B0D2D] focus:outline-none focus:ring-2 focus:ring-[#9351E2]"
+      />
+    </div>
+  );
+}
+
 function ServiceSelection({ service, setService, setPlace }: ServiceSelectionProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Industry</h2>
+      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Select Industry</h2>
       <div className="grid grid-cols-4 gap-4">
         {Object.keys(serviceOptions).map((serviceName) => (
           <div
@@ -114,14 +131,14 @@ function ServiceSelection({ service, setService, setPlace }: ServiceSelectionPro
               setPlace(""); // reset place on change
             }}
             className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              service === serviceName ? "border-blue-500 bg-blue-50" : "border-gray-300"
+              service === serviceName ? "border-[#9351E2] bg-[#9351E2]/10" : "border-[#9351E2]/30"
             }`}
           >
-            {serviceName === "Insurance" ? <FaUserTie size={24} color="#4f46e5" /> : 
-             serviceName === "Healthcare" ? <FaHospital size={24} color="#059669" /> :
-             serviceName === "Aviation" ? <FaPlane size={24} color="#0284c7" /> :
-             <MdRecordVoiceOver size={24} color="#6366f1" />}
-            <span className="mt-2 text-gray-800">{serviceName}</span>
+            {serviceName === "Insurance" ? <FaUserTie size={24} color="#9351E2" /> : 
+             serviceName === "Healthcare" ? <FaHospital size={24} color="#BC45FF" /> :
+             serviceName === "Aviation" ? <FaPlane size={24} color="#1B0D2D" /> :
+             <MdRecordVoiceOver size={24} color="#EE7794" />}
+            <span className="mt-2 text-[#1B0D2D]">{serviceName}</span>
           </div>
         ))}
       </div>
@@ -139,18 +156,18 @@ function PlaceSelection({ service, place, setPlace }: PlaceSelectionProps) {
   if (!service) return null;
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Agent</h2>
+      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Select Agent</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {serviceOptions[service].map((option) => (
           <div
             key={option.name}
             onClick={() => setPlace(option.name)}
             className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              place === option.name ? "border-blue-500 bg-blue-50" : "border-gray-300"
+              place === option.name ? "border-[#9351E2] bg-[#9351E2]/10" : "border-[#9351E2]/30"
             }`}
           >
             {option.icon}
-            <span className="mt-2 text-gray-800">{option.name}</span>
+            <span className="mt-2 text-[#1B0D2D] text-center">{option.name}</span>
           </div>
         ))}
       </div>
@@ -165,10 +182,10 @@ interface VoiceSelectionProps {
 
 function VoiceSelection({ voice, setVoice }: VoiceSelectionProps) {
   const voices = [
-    { id: "e6fce4ac-da54-43e9-8fb2-66de86f72a5b", label: "Richard-English", icon: <MdRecordVoiceOver size={30} color="#4f46e5" /> },
-    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#0891b2" /> },
-    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#db2777" /> },
-    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#7c3aed" /> },
+    { id: "e6fce4ac-da54-43e9-8fb2-66de86f72a5b", label: "Richard-English", icon: <MdRecordVoiceOver size={30} color="#9351E2" /> },
+    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#BC45FF" /> },
+    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#EE7794" /> },
+    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#1B0D2D" /> },
   ];
   
   // Set a default voice if none is selected
@@ -180,24 +197,24 @@ function VoiceSelection({ voice, setVoice }: VoiceSelectionProps) {
   
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Select Voice</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Select Voice</h2>
+      <div className="grid grid-cols-4 gap-4">
         {voices.map((v) => (
           <div
             key={v.id}
             onClick={() => setVoice(v.id)}
             className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              voice === v.id ? "border-blue-500 bg-blue-50" : "border-gray-300"
+              voice === v.id ? "border-[#9351E2] bg-[#9351E2]/10" : "border-[#9351E2]/30"
             }`}
           >
             {v.icon}
-            <span className="mt-2 text-gray-800">{v.label}</span>
+            <span className="mt-2 text-[#1B0D2D]">{v.label.split('-')[0]}</span>
           </div>
         ))}
       </div>
       {voice && (
-        <p className="text-sm text-gray-500 mt-2">
-          Selected voice: {voices.find(v => v.id === voice)?.label || "Unknown"}
+        <p className="text-sm text-[#1B0D2D]/70 mt-2">
+          Selected voice: {voices.find(v => v.id === voice)?.label.split('-')[0] || "Unknown"}
         </p>
       )}
     </div>
@@ -214,50 +231,36 @@ interface TaskInputProps {
 function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Special Instructions</h2>
-      {tasks.length > 0 && (
-        <div className="mt-4 mb-4 border rounded-lg bg-gray-50 p-3 max-h-40 overflow-y-auto">
-          <ul className="space-y-2">
-            {tasks.map((task, index) => (
-              <li key={index} className="bg-white p-3 rounded-lg shadow-sm text-gray-700 border border-gray-100">
-                {task}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <div className="flex items-center space-x-2">
+      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Special Instructions</h2>
+      <div className="flex mb-2">
         <input
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter special instructions for the AI agent"
-          className="flex-1 p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
+          className="flex-grow p-3 border border-[#9351E2]/30 rounded-l-lg text-[#1B0D2D] focus:outline-none focus:ring-2 focus:ring-[#9351E2]"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleAddTask();
+            }
+          }}
         />
         <button
           onClick={handleAddTask}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-3 px-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105"
+          className="bg-[#BC45FF] text-white px-4 rounded-r-lg hover:bg-[#9351E2] transition"
         >
-          Add
+          <FaPlus />
         </button>
       </div>
-    </div>
-  );
-}
-
-// Move this component outside of Home
-function CustomerNameInput({ customerName, setCustomerName }) {
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Customer Name</h2>
-      <input
-        type="text"
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-        placeholder="Enter customer name"
-        className="w-full p-3 border rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      {tasks.length > 0 && (
+        <ul className="space-y-2">
+          {tasks.map((task, index) => (
+            <li key={index} className="p-2 bg-[#9351E2]/10 rounded-lg text-[#1B0D2D]">
+              {task}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -268,12 +271,12 @@ function CustomPromptInput({ service, customSystemPrompt, setCustomSystemPrompt 
   
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Custom System Prompt</h2>
+      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Custom System Prompt</h2>
       <textarea
         value={customSystemPrompt}
         onChange={(e) => setCustomSystemPrompt(e.target.value)}
         placeholder="Enter your custom system prompt here..."
-        className="w-full h-64 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+        className="w-full h-64 p-4 border border-[#9351E2]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9351E2] text-[#1B0D2D]"
       />
     </div>
   );
@@ -339,6 +342,11 @@ export default function Home() {
       systemPrompt = `Customer Name: ${customerName}\n\n${systemPrompt}`;
     }
 
+    // Add tasks to the prompt if any
+    if (tasks.length > 0) {
+      systemPrompt += `\n\nSpecial Instructions:\n${tasks.map(task => `- ${task}`).join('\n')}`;
+    }
+
     // Log the data being sent for debugging
     console.log("Sending data:", {
       service,
@@ -392,9 +400,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-50 to-blue-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#9351E2] via-[#BC45FF] to-[#1B0D2D] p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Emvo DemoBox</h1>
+        <h1 className="text-4xl font-bold text-center text-[#1B0D2D] mb-8">Emvo DemoBox</h1>
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
@@ -411,10 +419,11 @@ export default function Home() {
         <div className="flex justify-center mt-8">
           <button
             onClick={handleSubmit}
-            className="flex items-center bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105"
+            disabled={isLoading}
+            className="flex items-center bg-gradient-to-r from-[#9351E2] to-[#EE7794] text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             <FaMicrophone className="mr-2" />
-            Try Call
+            {isLoading ? "Initiating Call..." : "Try Call"}
           </button>
         </div>
       </div>
