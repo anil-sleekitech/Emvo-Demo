@@ -1,11 +1,11 @@
 // src/pages/transcript.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function TranscriptPage() {
+function TranscriptContent() {
   const [transcript, setTranscript] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function TranscriptPage() {
     } else {
       setTranscript("No call ID found. Cannot retrieve transcript.");
     }
-  }, []);
+  }, [callId]);
 
   const handleGetTranscript = async () => {
     if (!callId) {
@@ -122,5 +122,13 @@ export default function TranscriptPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TranscriptPage() {
+  return (
+    <Suspense fallback={<div>Loading transcript...</div>}>
+      <TranscriptContent />
+    </Suspense>
   );
 }
