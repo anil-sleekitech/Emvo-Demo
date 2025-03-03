@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
 import { 
   FaMicrophone, 
   FaUserTie, 
@@ -23,6 +24,7 @@ import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
 import { BsPersonVcard } from "react-icons/bs";
 import { prompts } from "../prompts";
 import { voices } from "../config/voices";
+import EmvoLogo from './Emvo_Logo.png';
 
 // Define services and their corresponding options
 const serviceOptions: Record<string, { name: string; icon: React.ReactNode; promptKey?: string }[]> = {
@@ -401,8 +403,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#9351E2] via-[#BC45FF] to-[#1B0D2D] p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl">
-        <h1 className="text-4xl font-bold text-center text-[#1B0D2D] mb-8">Emvo DemoBox</h1>
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl relative">
+        {/* Logo positioned at top left */}
+        <div className="absolute top-4 left-4">
+          <Image 
+            src={EmvoLogo} 
+            alt="Emvo Logo" 
+            width={80} 
+            height={80} 
+            priority
+          />
+        </div>
+        
+        {/* Title centered but with space for logo */}
+        <div className="text-center pt-16 pb-6">
+          <h1 className="text-4xl font-bold text-[#1B0D2D]">Emvo DemoBox</h1>
+        </div>
+        
         <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
         <PlaceSelection service={service} place={place} setPlace={setPlace} />
         <VoiceSelection voice={voice} setVoice={setVoice} />
