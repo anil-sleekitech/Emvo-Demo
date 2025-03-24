@@ -193,6 +193,7 @@ const Home: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<UltravoxSession | null>(null);
+  const [currentCallId, setCurrentCallId] = useState<string | null>(null);
 
   const handleTryEmvo = () => {
     if (currentStep === "home") {
@@ -299,6 +300,9 @@ const Home: React.FC = () => {
         throw new Error("No call ID returned from server");
       }
 
+      // Store the call ID
+      setCurrentCallId(data.callId);
+
       // Close the dialog
       setIsDialogOpen(false);
 
@@ -361,6 +365,33 @@ const Home: React.FC = () => {
     }
   };
 
+  const fetchCallRecording = async (callId: string): Promise<string> => {
+    try {
+      const response = await fetch(
+        `https://km3t19pim7.execute-api.us-east-1.amazonaws.com/default/playground-apis/callrecording?callId=${callId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch recording: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Convert base64 to audio URL
+      const audioBlob = await fetch(`data:${data.contentType};base64,${data.audioData}`).then(res => res.blob());
+      return URL.createObjectURL(audioBlob);
+    } catch (error) {
+      console.error("Error fetching call recording:", error);
+      throw error;
+    }
+  };
+
   const handleEndCall = async () => {
     setIsLoading(true);
     try {
@@ -389,8 +420,22 @@ const Home: React.FC = () => {
       
       // Reset session status
       setSessionStatus(UltravoxSessionStatus.IDLE);
+
+      // Fetch call recording if we have a call ID
+      let audioUrl = "";
+      if (currentCallId) {
+        try {
+          // Add a small delay to ensure the recording is ready
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          audioUrl = await fetchCallRecording(currentCallId);
+        } catch (error) {
+          console.error("Error fetching call recording:", error);
+          toast.error("Failed to fetch call recording. Using fallback audio.");
+          audioUrl = "/sample-call.mp3";
+        }
+      }
       
-      // Update call state with transcripts
+      // Update call state with transcripts and audio URL
       setCallState(prev => ({
         ...prev,
         isActive: false,
@@ -398,11 +443,11 @@ const Home: React.FC = () => {
           { text: "Hi, how can I help you today?", timestamp: "11:12", isUser: false },
           { text: "I need help with my insurance claim", timestamp: "11:12", isUser: true },
         ],
-        audioUrl: "/sample-call.mp3"
+        audioUrl: audioUrl || "/sample-call.mp3"
       }));
       
-      // Add a small delay to ensure everything is cleaned up
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Reset current call ID
+      setCurrentCallId(null);
       
       // Open feedback dialog after call ends
       setIsFeedbackDialogOpen(true);
@@ -447,7 +492,7 @@ const Home: React.FC = () => {
 
       // Send data to API
       const response = await fetch(
-        "https://09lkaqto37.execute-api.us-east-1.amazonaws.com/Playground-Feedback",
+        "https://flpfl2gmba.execute-api.us-east-1.amazonaws.com/Playground-Feedback",
         {
           method: "POST",
           headers: {
