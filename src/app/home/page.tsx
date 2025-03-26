@@ -269,10 +269,9 @@ const Home: React.FC = () => {
         customerName: userInfo.name,
         systemPrompt
       });
-
-      // Make API call to initiate call
       const response = await fetch(
-        "https://bucbk5tdbzwzu5frgxybgnmprm0ibfcr.lambda-url.ap-south-1.on.aws/",
+     
+        "https://fc57nva4po6cjo22zd3o7u7mcy0jpzta.lambda-url.ap-south-1.on.aws/",
         {
           method: "POST",
           headers: {
@@ -288,6 +287,23 @@ const Home: React.FC = () => {
           }),
         }
       );
+      // const response = await fetch(
+      //   "https://2albu22pt7.execute-api.us-east-1.amazonaws.com/ultravox-lambda/",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({ 
+      //       service: selectedIndustry?.toLowerCase(), 
+      //       voice: voiceId,
+      //       agent: selectedAgent, 
+      //       time: currentTime,
+      //       customerName: userInfo.name,
+      //       systemPrompt
+      //     }),
+      //   }
+      // );
 
       if (!response.ok) {
         const errorText = await response.text();
