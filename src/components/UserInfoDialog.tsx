@@ -7,14 +7,17 @@ interface UserInfoDialogProps {
     name: string;
     email: string;
     designation: string;
+    customPrompt?: string;
   }) => void;
+  selectedAgent: string | null;
 }
 
-const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubmit }) => {
+const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubmit, selectedAgent }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     designation: '',
+    customPrompt: '',
   });
 
   if (!isOpen) return null;
@@ -23,6 +26,8 @@ const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubm
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const isCustomAgent = selectedAgent === "Customise your agent";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -74,6 +79,19 @@ const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubm
                 required
               />
             </div>
+
+            {isCustomAgent && (
+              <div>
+                <label className="block text-white mb-2">Custom Prompt</label>
+                <textarea
+                  value={formData.customPrompt}
+                  onChange={(e) => setFormData(prev => ({ ...prev, customPrompt: e.target.value }))}
+                  placeholder="Enter your custom prompt for the AI agent..."
+                  className="w-full px-4 py-3 bg-[#150C29] rounded-lg text-white border border-purple-500/30 focus:outline-none focus:border-purple-500 min-h-[100px] resize-y"
+                  required
+                />
+              </div>
+            )}
 
             <button
               type="submit"

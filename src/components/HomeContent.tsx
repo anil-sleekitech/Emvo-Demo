@@ -43,7 +43,7 @@ const features = [
 const HomeContent: React.FC<HomeContentProps> = ({ onTryEmvo }) => {
   return (
     <>
-      <section className="mt-4 p-4 bg-[#150C29] rounded-xl text-center relative flex flex-col items-center">
+      <section className="mt-4 p-4 bg-[#150C29] rounded-xl text-center relative flex flex-col items-center transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
         <h2 className="text-2xl font-semibold text-purple-300">Why Emvo?</h2>
         <div className="relative mt-2">
           <Image
@@ -51,12 +51,12 @@ const HomeContent: React.FC<HomeContentProps> = ({ onTryEmvo }) => {
             alt="Emvo Icon"
             width={300}
             height={300}
-            className="opacity-80 mx-auto"
+            className="opacity-80 mx-auto transition-all duration-300 hover:opacity-100"
           />
         </div>
         <button
           onClick={onTryEmvo}
-          className="absolute right-6 top-6 px-4 py-2 border border-purple-400 rounded-full flex items-center space-x-2 cursor-pointer hover:bg-purple-700 transition"
+          className="absolute right-6 top-6 px-4 py-2 border border-purple-400 rounded-full flex items-center space-x-2 cursor-pointer hover:bg-purple-700 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300"
         >
           <span>Try Emvo Now</span>
           <IoIosArrowForward />
@@ -67,13 +67,17 @@ const HomeContent: React.FC<HomeContentProps> = ({ onTryEmvo }) => {
         {features.map((feature, index) => (
           <div
             key={index}
-            className="p-4 bg-gradient-to-br from-[#44217B] to-[#030115] rounded-xl border border-gray-600"
+            className="p-4 bg-gradient-to-br from-[#44217B] to-[#030115] rounded-xl border border-gray-600 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 hover:border-purple-500/50"
           >
-            <span className="bg-purple-700 text-xs px-3 py-1 rounded-full inline-block mb-2">
+            <span className="bg-purple-700 text-xs px-3 py-1 rounded-full inline-block mb-2 transition-all duration-300 hover:bg-purple-600">
               {feature.tag}
             </span>
-            <h3 className="text-lg font-semibold">{feature.title}</h3>
-            <p className="text-sm text-gray-300 mt-1">{feature.description}</p>
+            <h3 className="text-lg font-semibold transition-colors duration-300 hover:text-purple-300">
+              {feature.title}
+            </h3>
+            <p className="text-sm text-gray-300 mt-1 transition-colors duration-300 hover:text-gray-200">
+              {feature.description}
+            </p>
           </div>
         ))}
       </div>
