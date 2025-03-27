@@ -20,7 +20,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#0A021D] text-white">
+    // <div className="flex flex-col w-full min-h-screen bg-[#0A021D] text-white"></div>
+    <div className="flex w-full min-h-screen  bg-[#0A021D] text-white">
       {/* Sidebar */}
       <aside className="w-16 bg-[#1C0F36] flex flex-col items-center py-6">
         {/* Navigation Icons */}

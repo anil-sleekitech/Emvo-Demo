@@ -2,6 +2,7 @@
 import { insurancePrompts } from './insurance';
 import { healthcarePrompts } from './healthcare';
 import { aviationPrompts } from './aviation';
+import { miscellaneousPrompts } from './miscellaneous';
 import { voices } from "../config/voices";
 // Import other prompts as needed
 
@@ -42,5 +43,6 @@ export const prompts = {
   insurance: insurancePrompts,
   healthcare: healthcarePrompts,
   aviation: aviationPrompts,
+  miscellaneous: miscellaneousPrompts,
   custom: customPrompts
 }; 

@@ -1,385 +1,323 @@
 "use client";
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
-import { 
-  FaMicrophone, 
-  FaUserTie, 
-  FaHospital, 
-  FaPlane, 
-  FaFileInvoiceDollar, 
-  FaHeartbeat, 
-  FaCalendarCheck, 
-  FaFileMedical, 
-  FaAmbulance, 
-  FaClipboardList,
-  FaHeadset,
-  FaMedal,
-  FaPlus
-} from "react-icons/fa";
-import { MdOutlineTranslate, MdRecordVoiceOver } from "react-icons/md";
-import { BsPersonVcard } from "react-icons/bs";
-import { prompts } from "../prompts";
-import { voices } from "../config/voices";
-import EmvoLogo from './Emvo_Logo.png';
+import React, { useState } from "react";
+import { StaticImageData } from "next/image";
 
-// Define services and their corresponding options
-const serviceOptions: Record<string, { name: string; icon: React.ReactNode; promptKey?: string }[]> = {
-  Insurance: [
-    { 
-      name: "Policy Information Retrieval", 
-      icon: <FaFileInvoiceDollar size={30} color="#9351E2" />,
-      promptKey: "getPolicyInformationPrompt"
-    },
-    { 
-      name: "Health Claim Initiation", 
-      icon: <FaHeartbeat size={30} color="#BC45FF" />,
-      promptKey: "getHealthClaimPrompt"
-    },
-    { 
-      name: "Policy Renewal Reminders", 
-      icon: <BsPersonVcard size={30} color="#EE7794" />,
-      promptKey: "getPolicyRenewalPrompt"
-    },
-  ],
-  Healthcare: [
-    { 
-      name: "Appointment Booking", 
-      icon: <FaCalendarCheck size={30} color="#9351E2" />,
-      promptKey: "getAppointmentBookingPrompt"
-    },
-    { 
-      name: "Diagnostic Centre Report Advisor", 
-      icon: <FaFileMedical size={30} color="#BC45FF" />,
-      promptKey: "getDiagnosticReportPrompt"
-    },
-    { 
-      name: "Emergency", 
-      icon: <FaAmbulance size={30} color="#EE7794" />,
-      promptKey: "getEmergencyPrompt"
-    },
-    { 
-      name: "Survey & Feedback", 
-      icon: <FaClipboardList size={30} color="#1B0D2D" />,
-      promptKey: "getSurveyFeedbackPrompt"
-    }
-  ],
-  Aviation: [
-    { 
-      name: "Customer Support", 
-      icon: <FaHeadset size={30} color="#9351E2" />,
-      promptKey: "getCustomerSupportPrompt"
-    },
-    { 
-      name: "Loyalty Program & Frequent Flyer Membership Renewal", 
-      icon: <FaMedal size={30} color="#BC45FF" />,
-      promptKey: "getLoyaltyProgramPrompt"
-    }
-  ],
-  Custom: [
-    {
-      name: "Custom Agent",
-      icon: <MdRecordVoiceOver size={30} color="#9351E2" />,
-      promptKey: "customPrompt"
-    }
-  ]
+// Import all assets
+import healthcareIcon from "../assets/healthcare.png";
+import aviationIcon from "../assets/aviation.png";
+import ecommIcon from "../assets/ecomm.png";
+import customIcon from "../assets/custom.png";
+import healthIcon from "../assets/health.png";
+import krishnaImage from "../assets/krishna.png";
+import riyaImage from "../assets/riya.png";
+import anjaliImage from "../assets/anjali.png";
+import miscellaneousIcon from "../assets/miscell.png";
+import shriviImage from "../assets/Shrivi.png";
+import salmaImage from "../assets/salma.png";
+import rajuImage from "../assets/Raju.png";
+import aakashImage from "../assets/aakash.png";
+import anikaImage from "../assets/anika.png";
+
+// Import agent icons
+import heartIcon from '../assets/heart.png';
+import lifeInsuIcon from '../assets/lifeinsu.png';
+import hospitalIcon from '../assets/hospital.png';
+import headphoneIcon from '../assets/headp.png';
+import customAgentIcon from '../assets/customagentb.png';
+
+import Layout from "@/components/Layout";
+import HomeContent from "@/components/HomeContent";
+import PlaygroundContent from "@/components/PlaygroundContent";
+import { toast } from "react-toastify";
+import CallInterface from "@/components/CallInterface";
+import CallSummary from "@/components/CallSummary";
+import { CallState } from "@/types";
+import UserInfoDialog from "@/components/UserInfoDialog";
+import FeedbackDialog from "@/components/FeedbackDialog";
+import { prompts } from "@/prompts";
+import { UltravoxSession, UltravoxSessionStatus } from "ultravox-client";
+
+// Extend Window interface
+declare global {
+  interface Window {
+    stream?: MediaStream;
+  }
+}
+
+// Define types
+type Step = "home" | "playground";
+type IndustryType = "Insurance" | "Healthcare" | "Aviation" | "E-commerce" |"Miscellaneous"| "Custom";
+
+type PromptFunction = (voiceId: string) => string;
+
+interface Agent {
+  title: string;
+  description: string;
+  icon: StaticImageData;
+}
+
+interface Industry {
+  icon: StaticImageData;
+  agents: Agent[];
+}
+
+type Industries = Record<IndustryType, Industry>;
+
+// Helper function to get agent icon
+const getAgentIcon = (title: string): StaticImageData => {
+  switch (title.toLowerCase()) {
+    case "health insurance advisor":
+      return heartIcon;
+    case "life insurance advisor":
+      return lifeInsuIcon;
+    case "hospital receptionist":
+      return hospitalIcon;
+    case "diagnostic report advisor":
+    case "customer relations executive":
+    case "customer support executive":
+      return headphoneIcon;
+    default:
+      return customAgentIcon;
+  }
 };
 
-// const handleUpload = () => {
-//   if (kbFile) {
-//     console.log("Uploading file:", kbFile.name);
-//   } else if (kbUrl.trim() !== "") {
-//     console.log("Uploading URL:", kbUrl);
-//   } else {
-//     toast.error("No file or URL provided");
-//   }
-// };
+const industries: Industries = {
+  Insurance: {
+    icon: healthIcon,
+    agents: [
+      {
+        title: "Health Insurance Advisor",
+        description: "Get policy details, coverage info, and answers instantly",
+        icon: getAgentIcon("Health insurance advisor"),
+      },
+      {
+        title: "Life Insurance Advisor",
+        description: "A seamless multi-agent system for choosing life insurance",
+        icon: getAgentIcon("Life insurance advisor"),
+      },
+    ],
+  },
+  Healthcare: {
+    icon: healthcareIcon,
+    agents: [
+      {
+        title: "Hospital Receptionist",
+        description: "Includes booking, cancellation & rescheduling",
+        icon: getAgentIcon("Hospital Receptionist"),
+      },
+      {
+        title: "Diagnostic Report Advisor",
+        description: "Simplifies blood work & health reports & provides preventive tips",
+        icon: getAgentIcon("Diagnostic report advisor"),
+      },
+    ],
+  },
+  Aviation: {
+    icon: aviationIcon,
+    agents: [
+      {
+        title: "Customer Relations Executive",
+        description: "Assists with cancellation, date change, name change requests & feedback",
+        icon: getAgentIcon("Customer relations executive"),
+      },
+    ],
+  },
+  "E-commerce": {
+    icon: ecommIcon,
+    agents: [
+      {
+        title: "Customer support Executive",
+        description: "Order, returns, refunds, exchanges, payments, account, or product issues",
+        icon: getAgentIcon("Customer support executive"),
+      },
+    ],
+  },
+  Miscellaneous: {
+    icon: miscellaneousIcon,
+    agents: [
+      {
+        title: "D2C Support Agent",
+        description: "Handle general inquiries, support requests, and information queries",
+        icon: getAgentIcon("General inquiry assistant"),
+      },
+      {
+        title: "Lifestyle Solution Executive",
+        description: "Provide technical assistance and troubleshooting support",
+        icon: getAgentIcon("Technical support specialist"),
+      },
+    ],
+  },
+  Custom: {
+    icon: customIcon,
+    agents: [
+      {
+        title: "Customise your agent",
+        description: "Personalise your agent—tailor responses, tone & style your way!",
+        icon: getAgentIcon("Customise your agent"),
+      },
+    ],
+  },
+};
 
-interface ServiceSelectionProps {
-  service: string;
-  setService: (service: string) => void;
-  setPlace: (place: string) => void;
-}
+const voices = [
+  { id: "riya", name: "Riya", avatar: riyaImage },
+  { id: "shrivi", name: "Shrivi", avatar: shriviImage },
+  { id: "anjali", name: "Anjali", avatar: anjaliImage },
+  { id: "krishna", name: "Krishna", avatar: krishnaImage },
+  { id: "raju", name: "Raju", avatar: rajuImage },
+  { id: "aakash", name: "Aakash", avatar: aakashImage },
+  { id: "anika", name: "Anika", avatar: anikaImage },
+  { id: "salma", name: "Salma", avatar: salmaImage },
+];
 
-// Move this component outside of Home
-function CustomerNameInput({ customerName, setCustomerName }) {
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Customer Name</h2>
-      <input
-        type="text"
-        value={customerName}
-        onChange={(e) => setCustomerName(e.target.value)}
-        placeholder="Enter customer name"
-        className="w-full p-3 border border-[#9351E2]/30 rounded-lg text-[#1B0D2D] focus:outline-none focus:ring-2 focus:ring-[#9351E2]"
-      />
-    </div>
-  );
-}
-
-function ServiceSelection({ service, setService, setPlace }: ServiceSelectionProps) {
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Select Industry</h2>
-      <div className="grid grid-cols-4 gap-4">
-        {Object.keys(serviceOptions).map((serviceName) => (
-          <div
-            key={serviceName}
-            onClick={() => {
-              setService(serviceName);
-              setPlace(""); // reset place on change
-            }}
-            className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              service === serviceName ? "border-[#9351E2] bg-[#9351E2]/10" : "border-[#9351E2]/30"
-            }`}
-          >
-            {serviceName === "Insurance" ? <FaUserTie size={24} color="#9351E2" /> : 
-             serviceName === "Healthcare" ? <FaHospital size={24} color="#BC45FF" /> :
-             serviceName === "Aviation" ? <FaPlane size={24} color="#1B0D2D" /> :
-             <MdRecordVoiceOver size={24} color="#EE7794" />}
-            <span className="mt-2 text-[#1B0D2D]">{serviceName}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-interface PlaceSelectionProps {
-  service: string;
-  place: string;
-  setPlace: (place: string) => void;
-}
-
-function PlaceSelection({ service, place, setPlace }: PlaceSelectionProps) {
-  if (!service) return null;
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Select Agent</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {serviceOptions[service].map((option) => (
-          <div
-            key={option.name}
-            onClick={() => setPlace(option.name)}
-            className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              place === option.name ? "border-[#9351E2] bg-[#9351E2]/10" : "border-[#9351E2]/30"
-            }`}
-          >
-            {option.icon}
-            <span className="mt-2 text-[#1B0D2D] text-center">{option.name}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-interface VoiceSelectionProps {
-  voice: string;
-  setVoice: (voice: string) => void;
-}
-
-function VoiceSelection({ voice, setVoice }: VoiceSelectionProps) {
-  const voices = [
-    { id: "e6fce4ac-da54-43e9-8fb2-66de86f72a5b", label: "Richard-English", icon: <MdRecordVoiceOver size={30} color="#9351E2" /> },
-    { id: "9f6262e3-1b03-4a0b-9921-50b9cff66a43", label: "Krishna-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#BC45FF" /> },
-    { id: "c2c5cce4-72ec-4d8b-8cdb-f8a0f6610bd1", label: "Riya-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#EE7794" /> },
-    { id: "ebae2397-0ba1-4222-9d5b-5313ddeb04b5", label: "Anjali-Hindi-IndianEnglish", icon: <MdOutlineTranslate size={30} color="#1B0D2D" /> },
-  ];
+// Helper function to get voice ID from name
+const getVoiceId = (voiceName: string | null): string | null => {
+  if (!voiceName) return null;
+  const voiceConfig = voices.find(v => v.name.toLowerCase() === voiceName.toLowerCase());
+  if (!voiceConfig) return null;
   
-  // Set a default voice if none is selected
-  useEffect(() => {
-    if (!voice && voices.length > 0) {
-      setVoice(voices[0].id);
-    }
-  }, [voice, setVoice, voices]);
-  
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Select Voice</h2>
-      <div className="grid grid-cols-4 gap-4">
-        {voices.map((v) => (
-          <div
-            key={v.id}
-            onClick={() => setVoice(v.id)}
-            className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition transform hover:scale-105 ${
-              voice === v.id ? "border-[#9351E2] bg-[#9351E2]/10" : "border-[#9351E2]/30"
-            }`}
-          >
-            {v.icon}
-            <span className="mt-2 text-[#1B0D2D]">{v.label.split('-')[0]}</span>
-          </div>
-        ))}
-      </div>
-      {voice && (
-        <p className="text-sm text-[#1B0D2D]/70 mt-2">
-          Selected voice: {voices.find(v => v.id === voice)?.label.split('-')[0] || "Unknown"}
-        </p>
-      )}
-    </div>
-  );
-}
+  // Map the voice name to its corresponding ID
+  switch (voiceConfig.name.toLowerCase()) {
+    case "riya":
+      return "d17917ec-fd98-4c50-8c83-052c575cbf3e"; // Riya - English Indian
+    case "shrivi":
+      return "a0998448-6810-4b44-bc90-ccb69d2a26f5"; // Shrivi - Tamil, English Indian
+    case "anjali":
+      return "ebae2397-0ba1-4222-9d5b-5313ddeb04b5"; // Anjali - Hinglish
+    case "krishna":
+      return "9f6262e3-1b03-4a0b-9921-50b9cff66a43"; // Krishna - Hinglish
+    case "salma":
+      return "9d7bc57b-2e1c-4622-acb7-39c4f32dacfb"; // Salma - Arabic, English (Dubai Accent)
+    case "raju":
+      return "7c125579-a8b9-46ba-887b-60e4f0449e5d"; // Raju - Hinglish
+    case "aakash":
+      return "82c9728c-e0fe-4bc2-b7a3-03bb271fafb9"; // Aakash - English Indian
+    case "anika":
+      return "44504e63-59c5-4f69-9340-423231c79a03"; // Anika - English Indian
+    default:
+      return null;
+  }
+};
 
-interface TaskInputProps {
-  tasks: string[];
-  newTask: string;
-  setNewTask: (task: string) => void;
-  handleAddTask: () => void;
-}
-
-function TaskInput({ tasks, newTask, setNewTask, handleAddTask }: TaskInputProps) {
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Special Instructions</h2>
-      <div className="flex mb-2">
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Enter special instructions for the AI agent"
-          className="flex-grow p-3 border border-[#9351E2]/30 rounded-l-lg text-[#1B0D2D] focus:outline-none focus:ring-2 focus:ring-[#9351E2]"
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleAddTask();
-            }
-          }}
-        />
-        <button
-          onClick={handleAddTask}
-          className="bg-[#BC45FF] text-white px-4 rounded-r-lg hover:bg-[#9351E2] transition"
-        >
-          <FaPlus />
-        </button>
-      </div>
-      {tasks.length > 0 && (
-        <ul className="space-y-2">
-          {tasks.map((task, index) => (
-            <li key={index} className="p-2 bg-[#9351E2]/10 rounded-lg text-[#1B0D2D]">
-              {task}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-// Custom prompt input component
-function CustomPromptInput({ service, customSystemPrompt, setCustomSystemPrompt }) {
-  if (service !== "Custom") return null;
-  
-  return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold text-[#1B0D2D] mb-3">Custom System Prompt</h2>
-      <textarea
-        value={customSystemPrompt}
-        onChange={(e) => setCustomSystemPrompt(e.target.value)}
-        placeholder="Enter your custom system prompt here..."
-        className="w-full h-64 p-4 border border-[#9351E2]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9351E2] text-[#1B0D2D]"
-      />
-    </div>
-  );
-}
-
-export default function Home() {
-  const router = useRouter();
-  const [service, setService] = useState("");
-  const [voice, setVoice] = useState("e6fce4ac-da54-43e9-8fb2-66de86f72a5b"); // Set default voice
-  const [place, setPlace] = useState("");
-  const [tasks, setTasks] = useState<string[]>([]); // Explicitly type as string array
-  const [newTask, setNewTask] = useState("");
+const Home: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState<Step>("home");
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [selectedVoice, setSelectedVoice] = useState<string | null>(null);
+  const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFeedbackDialogOpen, setIsFeedbackDialogOpen] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState<UltravoxSessionStatus>(UltravoxSessionStatus.IDLE);
+  const [userData, setUserData] = useState<{
+    name: string;
+    email: string;
+    designation: string;
+    feedback?: {
+      naturalness: string;
+      emotionalIntelligence: string;
+      businessInterest: string;
+      preferredTime: string;
+    };
+    customPrompt?: string;
+  } | null>(null);
+  const [callState, setCallState] = useState<CallState>({
+    isActive: false,
+    agentName: '',
+    transcripts: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [customSystemPrompt, setCustomSystemPrompt] = useState("");
-  const [customerName, setCustomerName] = useState("Vaibhav Anand"); // Set default name
+  const [session, setSession] = useState<UltravoxSession | null>(null);
+  const [currentCallId, setCurrentCallId] = useState<string | null>(null);
 
-  const handleAddTask = () => {
-    if (newTask.trim()) {
-      setTasks((prev) => [...prev, newTask.trim()]);
-      setNewTask("");
+  const handleTryEmvo = () => {
+    if (currentStep === "home") {
+      setCurrentStep("playground");
+      setSelectedIndustry("Insurance");
+    } else {
+      if (!selectedIndustry || !selectedAgent || !selectedVoice) {
+        toast.error("Please complete all selections before proceeding");
+        return;
+      }
+      
+      // Open the dialog instead of starting the call immediately
+      setIsDialogOpen(true);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Set loading state
+  const handleNavigation = (step: "home" | "playground") => {
+    setCurrentStep(step);
+    if (step === "playground" && !selectedIndustry) {
+      setSelectedIndustry("Insurance");
+    }
+  };
+
+  const handleUserInfoSubmit = async (userInfo: { name: string; email: string; designation: string; customPrompt?: string }) => {
     setIsLoading(true);
+    try {
+      // Store user info
+      setUserData(userInfo);
     
     // Get current time
     const now = new Date();
     const currentTime = now.toLocaleTimeString();
     
-    // Determine which prompt to use based on service and option
+      // Get the voice ID from the selected voice name
+      const voiceId = getVoiceId(selectedVoice);
+      if (!voiceId) {
+        toast.error("Invalid voice selection");
+        return;
+      }
+      
+      // Determine which prompt to use based on industry and agent
     let systemPrompt = "";
     
-    if (service === "Custom") {
-      // Use the custom prompt with voice introduction
-      const customPromptFunction = prompts.custom.customPrompt;
-      if (typeof customPromptFunction === 'function') {
-        systemPrompt = customPromptFunction(voice, customSystemPrompt);
-      } else {
-        systemPrompt = customSystemPrompt;
-      }
-    } else if (place && serviceOptions[service].find(option => option.name === place)) {
+      if (selectedIndustry === "Custom") {
+        // Use custom prompt
+        systemPrompt = customPrompt;
+      } else if (selectedIndustry && selectedAgent) {
       // Get the appropriate service prompts
-      const selectedOption = serviceOptions[service].find(option => option.name === place);
-      if (selectedOption && selectedOption.promptKey) {
-        const servicePrompts = prompts[service.toLowerCase()];
+        const industry = selectedIndustry.toLowerCase() as keyof typeof prompts;
+        const servicePrompts = prompts[industry];
+        const promptKey = getPromptKey(selectedAgent);
         
-        if (selectedOption.promptKey in servicePrompts) {
-          // Call the function with the voice ID to get the voice-specific prompt
-          const promptFunction = servicePrompts[selectedOption.promptKey as keyof typeof servicePrompts];
-          if (typeof promptFunction === 'function') {
-            systemPrompt = promptFunction(voice);
-          }
+        if (promptKey && servicePrompts && promptKey in servicePrompts) {
+          const promptFunction = servicePrompts[promptKey as keyof typeof servicePrompts] as PromptFunction;
+          systemPrompt = promptFunction(voiceId);
         }
       }
-    }
-    
-    // Add customer name to the beginning of the prompt if provided
-    if (customerName.trim()) {
-      systemPrompt = `Customer Name: ${customerName}\n\n${systemPrompt}`;
-    }
 
-    // Add tasks to the prompt if any
-    if (tasks.length > 0) {
-      systemPrompt += `\n\nSpecial Instructions:\n${tasks.map(task => `- ${task}`).join('\n')}`;
+      // Add customer name to the beginning of the prompt
+      if (userInfo.name.trim()) {
+        systemPrompt = `Customer Name: ${userInfo.name}\n\n${systemPrompt}`;
     }
 
     // Log the data being sent for debugging
     console.log("Sending data:", {
-      service,
-      voice,
-      place,
+        service: selectedIndustry?.toLowerCase(),
+        voice: voiceId,
+        agent: selectedAgent,
       time: currentTime,
-      tasks,
-      customerName,
+        customerName: userInfo.name,
       systemPrompt
     });
-
-    try {
       const response = await fetch(
-        "https://bucbk5tdbzwzu5frgxybgnmprm0ibfcr.lambda-url.ap-south-1.on.aws/",
+     
+        "https://fc57nva4po6cjo22zd3o7u7mcy0jpzta.lambda-url.ap-south-1.on.aws/",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ 
-            service, 
-            voice,
-            place, 
+            service: selectedIndustry?.toLowerCase(), 
+            voice: voiceId,
+            agent: selectedAgent, 
             time: currentTime, 
-            tasks,
-            customerName,
+            customerName: userInfo.name,
             systemPrompt 
           }),
         }
       );
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Server error:", errorText);
@@ -391,8 +329,41 @@ export default function Home() {
         throw new Error("No call ID returned from server");
       }
       
-      console.log("Call initiated with ID:", data.callId);
-      router.push(`/call?callId=${data.callId}`);
+      // Store the call ID
+      setCurrentCallId(data.callId);
+
+      // Close the dialog
+      setIsDialogOpen(false);
+
+      setCallState(prev => ({
+        ...prev,
+        isActive: true,
+        agentName: selectedAgent || ''
+      }));
+
+      // Initialize call session
+      const newSession = new UltravoxSession();
+      setSession(newSession);
+      
+      try {
+        // Get user media
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        window.stream = stream;
+
+        newSession.joinCall(`wss://prod-voice-pgaenaxiea-uc.a.run.app/calls/${data.callId}`, JSON.stringify({
+          stream: stream,
+        }));
+
+        newSession.addEventListener("status", () => {
+          setSessionStatus(newSession.status);
+        });
+
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+        toast.error("Failed to access microphone. Please check your permissions and try again.");
+        return;
+      }
+
     } catch (error) {
       console.error("Error initiating call:", error);
       toast.error("An error occurred while trying to initiate the call. Please try again.");
@@ -401,50 +372,263 @@ export default function Home() {
     }
   };
 
+  // Helper function to get prompt key from agent title
+  const getPromptKey = (agentTitle: string): string | null => {
+    switch (agentTitle) {
+      case "Health insurance advisor":
+        return "getPolicyInformationPrompt";
+      case "Life insurance advisor":
+        return "getHealthClaimPrompt";
+      case "Hospital receptionist":
+        return "getAppointmentBookingPrompt";
+      case "Diagnostic report advisor":
+        return "getDiagnosticReportPrompt";
+      case "Customer relations executive":
+        return "getCustomerSupportPrompt";
+      case "Customer support executive":
+        return "getCustomerSupportPrompt";
+      case "D2C Support Agent":
+        return "getLifestyleSupportPrompt";
+      case "Lifestyle Solution Executive":
+        return "getLifestyleSupportPrompt";
+      case "Customise your agent":
+        return "customPrompt";
+      default:
+        return null;
+    }
+  };
+
+  const fetchCallRecording = async (callId: string): Promise<string> => {
+    try {
+      const response = await fetch(
+        `https://km3t19pim7.execute-api.us-east-1.amazonaws.com/default/playground-apis/callrecording?callId=${callId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch recording: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      // Convert base64 to audio URL
+      const audioBlob = await fetch(`data:${data.contentType};base64,${data.audioData}`).then(res => res.blob());
+      return URL.createObjectURL(audioBlob);
+    } catch (error) {
+      console.error("Error fetching call recording:", error);
+      throw error;
+    }
+  };
+
+  const handleEndCall = async () => {
+    setIsLoading(true);
+    try {
+      console.log("Ending call...");
+      
+      // Leave the call if session exists
+      if (session) {
+        try {
+          await session.leaveCall();
+          console.log("Call left successfully");
+        } catch (error) {
+          console.error("Error leaving call:", error);
+        }
+        setSession(null);
+      }
+      
+      // Stop all media tracks
+      if (window.stream) {
+        console.log("Stopping media tracks...");
+        window.stream.getTracks().forEach((track) => {
+          track.stop();
+          console.log(`Track ${track.kind} stopped`);
+        });
+        window.stream = undefined;
+      }
+      
+      // Reset session status
+      setSessionStatus(UltravoxSessionStatus.IDLE);
+
+      // Fetch call recording if we have a call ID
+      let audioUrl = "";
+      if (currentCallId) {
+        try {
+          // Add a small delay to ensure the recording is ready
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          audioUrl = await fetchCallRecording(currentCallId);
+        } catch (error) {
+          console.error("Error fetching call recording:", error);
+          toast.error("Failed to fetch call recording. Using fallback audio.");
+          audioUrl = "/sample-call.mp3";
+        }
+      }
+      
+      // Update call state with transcripts and audio URL
+      setCallState(prev => ({
+        ...prev,
+        isActive: false,
+        transcripts: [
+          { text: "Hi, how can I help you today?", timestamp: "11:12", isUser: false },
+          { text: "I need help with my insurance claim", timestamp: "11:12", isUser: true },
+        ],
+        audioUrl: audioUrl || "/sample-call.mp3"
+      }));
+      
+      // Reset current call ID
+      setCurrentCallId(null);
+      
+      // Open feedback dialog after call ends
+      setIsFeedbackDialogOpen(true);
+    } catch (error) {
+      console.error("Error ending call:", error);
+      // Open feedback dialog anyway
+      setIsFeedbackDialogOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFeedbackSubmit = async (feedback: {
+    naturalness: string;
+    emotionalIntelligence: string;
+    businessInterest: string;
+    preferredTime: string;
+  }) => {
+    setIsLoading(true);
+    try {
+      // Validate required data
+      if (!userData || !userData.name || !userData.email) {
+        throw new Error("Missing required user information");
+      }
+
+      // Combine user data with feedback
+      const completeData = {
+        name: userData.name,
+        email: userData.email,
+        designation: userData.designation || "",
+        naturalness: feedback.naturalness,
+        emotionalIntelligence: feedback.emotionalIntelligence,
+        businessInterest: feedback.businessInterest,
+        preferredTime: feedback.preferredTime,
+        timestamp: new Date().toISOString(),
+        selectedIndustry: selectedIndustry || "",
+        selectedAgent: selectedAgent || "",
+        selectedVoice: selectedVoice || ""
+      };
+
+      console.log("Sending feedback data:", completeData);
+
+      // Send data to API
+      const response = await fetch(
+        "https://flpfl2gmba.execute-api.us-east-1.amazonaws.com/Playground-Feedback",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(completeData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Server error response:", errorText);
+        throw new Error(`Failed to submit feedback: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Feedback submitted successfully:", result);
+      toast.success("Thank you for your feedback!");
+
+      // Store feedback with user data locally
+      setUserData(prev => prev ? {
+        ...prev,
+        feedback
+      } : null);
+
+      // Close the feedback dialog
+      setIsFeedbackDialogOpen(false);
+
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to submit feedback. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderContent = () => {
+    if (callState.isActive) {
+      return (
+        <CallInterface
+          agentName={callState.agentName}
+          onEndCall={handleEndCall}
+          suggestions={[
+            "Can you check my doctor's appointment?",
+            "Can you explain my hospital bill?",
+            "I need a cost estimate for my treatment",
+            "Can you send my medical reports via email?",
+            "Where can I collect my lab test reports?"
+          ]}
+          sessionStatus={sessionStatus}
+          isLoading={isLoading}
+        />
+      );
+    }
+    
+    if (callState.transcripts.length > 0) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#9351E2] via-[#BC45FF] to-[#1B0D2D] p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl relative">
-        {/* Logo positioned at top left */}
-        <div className="absolute top-4 left-4">
-          <Image 
-            src={EmvoLogo} 
-            alt="Emvo Logo" 
-            width={80} 
-            height={80} 
-            priority
+        <>
+          <CallSummary
+            agentName={callState.agentName}
+            audioUrl={callState.audioUrl || ''}
+            transcripts={callState.transcripts}
+            onStartNewCall={() => setCallState({ isActive: false, agentName: '', transcripts: [] })}
           />
-        </div>
-        
-        {/* Title centered but with space for logo */}
-        <div className="text-center pt-16 pb-6">
-          <h1 className="text-4xl font-bold text-[#1B0D2D]">Emvo DemoBox</h1>
-        </div>
-        
-        <ServiceSelection service={service} setService={setService} setPlace={setPlace} />
-        <PlaceSelection service={service} place={place} setPlace={setPlace} />
-        <VoiceSelection voice={voice} setVoice={setVoice} />
-        <CustomerNameInput 
-          customerName={customerName} 
-          setCustomerName={setCustomerName} 
+          <FeedbackDialog
+            isOpen={isFeedbackDialogOpen}
+            onClose={() => setIsFeedbackDialogOpen(false)}
+            onSubmit={handleFeedbackSubmit}
+          />
+        </>
+      );
+    }
+
+    if (currentStep === "home") {
+      return <HomeContent onTryEmvo={handleTryEmvo} />;
+    }
+    
+    return (
+      <>
+        <PlaygroundContent
+          selectedIndustry={selectedIndustry}
+          setSelectedIndustry={setSelectedIndustry}
+          selectedAgent={selectedAgent}
+          setSelectedAgent={setSelectedAgent}
+          selectedVoice={selectedVoice}
+          setSelectedVoice={setSelectedVoice}
+          onTryEmvo={handleTryEmvo}
+          industries={industries}
+          voices={voices}
+          customPrompt={customPrompt}
+          setCustomPrompt={setCustomPrompt}
         />
-        <CustomPromptInput 
-          service={service} 
-          customSystemPrompt={customSystemPrompt} 
-          setCustomSystemPrompt={setCustomSystemPrompt} 
+        <UserInfoDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          onSubmit={handleUserInfoSubmit}
+          selectedAgent={selectedAgent}
         />
-        <TaskInput tasks={tasks} newTask={newTask} setNewTask={setNewTask} handleAddTask={handleAddTask} />
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="flex items-center bg-gradient-to-r from-[#9351E2] to-[#EE7794] text-white font-medium py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            <FaMicrophone className="mr-2" />
-            {isLoading ? "Initiating Call..." : "Try Call"}
-          </button>
-        </div>
-      </div>
-      <ToastContainer />
-    </div>
-  );
-}
+      </>
+    );
+  };
+
+  return <Layout onNavigate={handleNavigation}>{renderContent()}</Layout>;
+};
+
+export default Home;
