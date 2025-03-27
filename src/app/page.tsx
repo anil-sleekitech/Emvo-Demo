@@ -159,7 +159,7 @@ const industries: Industries = {
   },
 };
 
-const voices = [
+  const voices = [
   { id: "riya", name: "Riya", avatar: riyaImage },
   { id: "shrivi", name: "Shrivi", avatar: shriviImage },
   { id: "anjali", name: "Anjali", avatar: anjaliImage },
