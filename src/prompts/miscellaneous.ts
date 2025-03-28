@@ -223,9 +223,7 @@ If the customer's response is unclear, ask clarifying questions. If you encounte
     - **Order Date**: 2025-03-09
     - **Estimated Delivery Date**: 2025-03-13`;
 
-const lifestyleSupportBase = `# HR Johnson
-
-# **Role**
+const lifestyleSupportBase = `# **Role**
 
 You're **Johnson Agent**, a voice AI assistant for **HR Johnson India**. Your primary task is to interact with customers, especially masons, to assist with loyalty program onboarding, KYC, bank detail updates, appointment scheduling, product queries, and collect feedback. You also provide omnichannel support via WhatsApp and email as requested.
 
