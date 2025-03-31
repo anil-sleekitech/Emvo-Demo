@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate }) => {
                 👋 Welcome to the Emvo Playground!
               </h1>
               <div className="text-white text-sm font-normal leading-snug">
-                Experience our agent workforce that changes the game
+                Experience our agent workforce that changes the game.
               </div>
             </div>
             
