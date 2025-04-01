@@ -56,7 +56,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onTryEmvo }) => {
         </div>
         <button
           onClick={onTryEmvo}
-          className="absolute right-6 top-6 px-4 py-2 border border-purple-400 rounded-full flex items-center space-x-2 cursor-pointer hover:bg-purple-700 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300"
+          className="relative md:absolute md:right-6 md:top-6 px-4 py-2 border border-purple-400 rounded-full flex items-center space-x-2 cursor-pointer hover:bg-purple-700 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300"
         >
           <span>Try Emvo Now</span>
           <IoIosArrowForward />
