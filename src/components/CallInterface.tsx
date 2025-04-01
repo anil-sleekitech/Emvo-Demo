@@ -29,33 +29,33 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, sug
   return (
     <div className="space-y-6 p-6 bg-[#150C29] rounded-xl">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between md:items-center items-start">
         <div className="flex items-center space-x-2">
           <button className="text-purple-400">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="text-xl text-white">Call in progress, you have a minute🚀</h2>
+          <h2 className="text-lg sm:text-xl text-white">Call in progress, you have a minute🚀</h2>
         </div>
         <button
           onClick={onEndCall}
-          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white"
+          className="px-4 py-2 mt-3 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white hidden md:block"
         >
           End the call
         </button>
       </div>
 
-      <p className="text-gray-300">
+      <p className="text-gray-300 text-sm">
         Talk to {agentName} in English, Hindi & 18+ launguages. Do share your name!
       </p>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col md:flex-row gap-3">
         {/* Main Content */}
         <div className="flex-1 bg-black rounded-xl p-4">
           {/* Animation */}
-          <div className="relative w-full h-[250px] bg-[#010003] rounded-xl overflow-hidden mb-6">
-            <div className="absolute inset-0 flex items-center justify-start pl-8">
+          <div className="relative w-full h-[100%] md:h-[250px] bg-[#010003] rounded-xl overflow-hidden mb-6">
+            <div className="md:absolute inset-0 flex items-center md:justify-start justify-center pl-0 md:pl-8">
               <div className="relative w-48 h-48">
                 <Image
                   src={upcallGif}
@@ -65,10 +65,18 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, sug
                 />
               </div>
             </div>
-            <div className="absolute bottom-0 inset-x-0 bg-black/50 p-4 backdrop-blur-sm">
-              <p className="text-white text-left pl-8">
+            <div className="md:absolute bottom-0 inset-x-0 bg-black/50 p-4 backdrop-blur-sm">
+              <p className="text-white md:text-left text-center pl-0 md:pl-8">
                 {agentName} is {statusLabel.toLowerCase()} 💬
               </p>
+            </div>
+            <div className="text-center flex justify-center">
+            <button
+              onClick={onEndCall}
+              className="px-4 py-2 mt-3 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white md:hidden block"
+            >
+              End the call
+            </button>
             </div>
           </div>
 
@@ -90,7 +98,7 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, sug
         </div>
 
         {/* Live Transcription */}
-        <div className="w-80 bg-[#0A021D] rounded-xl p-4">
+        <div className="md:w-80 w-full bg-[#0A021D] rounded-xl p-4 hidden md:block">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold">Live Transcription</h3>
             <div className="flex items-center space-x-1">

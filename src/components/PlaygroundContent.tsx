@@ -82,7 +82,7 @@ const PlaygroundContent: React.FC<PlaygroundContentProps> = ({
       {/* Industry Selection */}
       <div>
         <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">STEP 1: Select your industry</h2>
-        <div className="flex overflow-x-auto pb-4 space-x-3 md:space-x-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+        <div className="flex overflow-x-auto snap-x pb-4 pt-4 space-x-3 md:space-x-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
           {Object.entries(industries).map(([industry, data]) => (
             <button
               key={industry}
@@ -141,7 +141,7 @@ const PlaygroundContent: React.FC<PlaygroundContentProps> = ({
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
               {industries[selectedIndustry].agents.map((agent) => (
                 <button
                   key={agent.title}
@@ -196,7 +196,7 @@ const PlaygroundContent: React.FC<PlaygroundContentProps> = ({
             {/* Scrollable Container */}
             <div 
               id="voice-scroll-container"
-              className="flex overflow-x-auto space-x-3 md:space-x-4 scrollbar-hide scroll-smooth px-10 md:px-12"
+              className="flex overflow-x-auto snap-x space-x-3 md:space-x-4 scrollbar-hide scroll-smooth px-10 md:px-12"
             >
               {voices.map((voice) => (
                 <button
