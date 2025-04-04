@@ -141,8 +141,8 @@ const industries: Industries = {
         icon: getAgentIcon("General inquiry assistant"),
       },
       {
-        title: "Lifestyle Solution Executive",
-        description: "Provide technical assistance and troubleshooting support",
+        title: "Loyalty Program Manager",
+        description: "Provide assistance with loyalty program, KYC",
         icon: getAgentIcon("Technical support specialist"),
       },
     ],
