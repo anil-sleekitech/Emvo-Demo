@@ -11,7 +11,7 @@ interface CallInterfaceProps {
   isLoading?: boolean;
 }
 
-const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, suggestions, sessionStatus }) => {
+const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, suggestions, sessionStatus, isLoading }) => {
   let statusLabel = "Idle";
   let statusColor = "#9ca3af"; // gray-400
   
@@ -26,6 +26,15 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, sug
     statusColor = "#9ca3af"; // gray-400
   }
 
+  // Add this function to handle multiple clicks
+  const handleEndCallClick = () => {
+    // Disable the button to prevent multiple clicks
+    if (isLoading) return;
+    
+    // Call the onEndCall function
+    onEndCall();
+  };
+
   return (
     <div className="space-y-6 p-6 bg-[#150C29] rounded-xl">
       {/* Header */}
@@ -39,10 +48,11 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, sug
           <h2 className="text-lg sm:text-xl text-white">Call in progress, you have a minute🚀</h2>
         </div>
         <button
-          onClick={onEndCall}
-          className="px-4 py-2 mt-3 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white hidden md:block"
+          onClick={handleEndCallClick}
+          disabled={isLoading}
+          className={`px-4 py-2 mt-3 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white hidden md:block ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          End the call
+          {isLoading ? "Ending call..." : "End the call"}
         </button>
       </div>
 
@@ -72,10 +82,11 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ agentName, onEndCall, sug
             </div>
             <div className="text-center flex justify-center">
             <button
-              onClick={onEndCall}
-              className="px-4 py-2 mt-3 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white md:hidden block"
+              onClick={handleEndCallClick}
+              disabled={isLoading}
+              className={`px-4 py-2 mt-3 md:mt-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full text-white md:hidden block ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              End the call
+              {isLoading ? "Ending call..." : "End the call"}
             </button>
             </div>
           </div>

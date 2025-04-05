@@ -29,35 +29,48 @@ function CallContent() {
     callEndedRef.current = true;
     console.log("Cleaning up call resources");
     
-    try {
-      if (sessionRef.current) {
-        await sessionRef.current.leaveCall();
-        console.log("Session left");
-        sessionRef.current = null;
+    // Create a promise that will resolve after a timeout to ensure we don't hang
+    const timeoutPromise = new Promise(resolve => {
+      setTimeout(() => {
+        console.log("Cleanup timed out, forcing cleanup");
+        resolve(null);
+      }, 3000);
+    });
+    
+    const cleanupPromise = async () => {
+      try {
+        if (sessionRef.current) {
+          await sessionRef.current.leaveCall();
+          console.log("Session left");
+          sessionRef.current = null;
+        }
+        
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach((track) => {
+            track.stop();
+            console.log("Track stopped:", track.kind);
+          });
+          mediaStreamRef.current = null;
+        }
+        
+        if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+          await audioContextRef.current.close();
+          console.log("Audio context closed");
+          audioContextRef.current = null;
+        }
+        
+        if (animationFrameIdRef.current) {
+          cancelAnimationFrame(animationFrameIdRef.current);
+          console.log("Animation frame canceled");
+          animationFrameIdRef.current = null;
+        }
+      } catch (error) {
+        console.error("Error during cleanup:", error);
       }
-      
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach((track) => {
-          track.stop();
-          console.log("Track stopped:", track.kind);
-        });
-        mediaStreamRef.current = null;
-      }
-      
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        await audioContextRef.current.close();
-        console.log("Audio context closed");
-        audioContextRef.current = null;
-      }
-      
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-        console.log("Animation frame canceled");
-        animationFrameIdRef.current = null;
-      }
-    } catch (error) {
-      console.error("Error during cleanup:", error);
-    }
+    };
+    
+    // Race the timeout against the actual cleanup
+    await Promise.race([cleanupPromise(), timeoutPromise]);
   };
 
   useEffect(() => {

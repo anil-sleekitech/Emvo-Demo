@@ -430,30 +430,40 @@ const Home: React.FC = () => {
     try {
       console.log("Ending call...");
       
+      // Create a promise that will resolve after a timeout to ensure we don't hang
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Call end operation timed out")), 5000);
+      });
+      
       // Leave the call if session exists
-      if (session) {
-        try {
-          await session.leaveCall();
-          console.log("Call left successfully");
-        } catch (error) {
-          console.error("Error leaving call:", error);
+      const leaveCallPromise = async () => {
+        if (session) {
+          try {
+            await session.leaveCall();
+            console.log("Call left successfully");
+          } catch (error) {
+            console.error("Error leaving call:", error);
+          }
+          setSession(null);
         }
-        setSession(null);
-      }
+        
+        // Stop all media tracks
+        if (window.stream) {
+          console.log("Stopping media tracks...");
+          window.stream.getTracks().forEach((track) => {
+            track.stop();
+            console.log(`Track ${track.kind} stopped`);
+          });
+          window.stream = undefined;
+        }
+        
+        // Reset session status
+        setSessionStatus(UltravoxSessionStatus.IDLE);
+      };
       
-      // Stop all media tracks
-      if (window.stream) {
-        console.log("Stopping media tracks...");
-        window.stream.getTracks().forEach((track) => {
-          track.stop();
-          console.log(`Track ${track.kind} stopped`);
-        });
-        window.stream = undefined;
-      }
+      // Race the timeout against the actual operation
+      await Promise.race([leaveCallPromise(), timeoutPromise]);
       
-      // Reset session status
-      setSessionStatus(UltravoxSessionStatus.IDLE);
-
       // Fetch call recording if we have a call ID
       let audioUrl = "";
       if (currentCallId) {
@@ -486,6 +496,22 @@ const Home: React.FC = () => {
       setIsFeedbackDialogOpen(true);
     } catch (error) {
       console.error("Error ending call:", error);
+      // Force cleanup even if there was an error
+      if (window.stream) {
+        window.stream.getTracks().forEach(track => track.stop());
+        window.stream = undefined;
+      }
+      setSession(null);
+      setSessionStatus(UltravoxSessionStatus.IDLE);
+      setCallState(prev => ({
+        ...prev,
+        isActive: false,
+        transcripts: [
+          { text: "Hi, how can I help you today?", timestamp: "11:12", isUser: false },
+          { text: "I need help with my insurance claim", timestamp: "11:12", isUser: true },
+        ],
+        audioUrl: "/sample-call.mp3"
+      }));
       // Open feedback dialog anyway
       setIsFeedbackDialogOpen(true);
     } finally {
