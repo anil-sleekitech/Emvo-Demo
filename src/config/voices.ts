@@ -22,7 +22,7 @@ export const voices = [
 ]; 
 
 // Helper function to add voice introduction to a prompt
-const addVoiceIntro = (prompt: string, voiceId: string, agentTitle?: string): string => {
+export const addVoiceIntro = (prompt: string, voiceId: string, agentTitle?: string): string => {
   const voice = voices.find(v => v.id === voiceId);
   if (!voice) return prompt;
   

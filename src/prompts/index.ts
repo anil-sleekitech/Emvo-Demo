@@ -3,11 +3,11 @@ import { insurancePrompts } from './insurance';
 import { healthcarePrompts } from './healthcare';
 import { aviationPrompts } from './aviation';
 import { miscellaneousPrompts } from './miscellaneous';
-import { voices } from "../config/voices";
+import { voices, addVoiceIntro } from "../config/voices";
 // Import other prompts as needed
 
 // Helper function to add voice introduction to a prompt
-const addVoiceIntro = (prompt: string, voiceId: string): string => {
+const addVoiceIntro = (prompt: string, voiceId: string, agentTitle?: string): string => {
   const voice = voices.find(v => v.id === voiceId);
   if (!voice) return prompt;
   
@@ -15,26 +15,24 @@ const addVoiceIntro = (prompt: string, voiceId: string): string => {
   const voiceName = voice.label.split('-')[0];
   
   // Replace [AI Agent Name] with the actual voice name
-  const promptWithName = prompt.replace(/\[AI Agent Name\]/g, voiceName);
+  let promptWithName = prompt.replace(/\[AI Agent Name\]/g, voiceName);
+  
+  // Add agent title if provided
+  if (agentTitle) {
+    promptWithName = promptWithName.replace(/\[Agent Role\]/g, agentTitle);
+  }
   
   return `${voice.introduction}\n\n${promptWithName}`;
 };
 
 // Custom prompts handler
 const customPrompts = {
-  customPrompt: (voiceId: string, customPrompt?: string) => {
+  customPrompt: (voiceId: string, agentTitle?: string, customPrompt?: string) => {
     if (!customPrompt) {
-      return addVoiceIntro("You are a helpful AI assistant.", voiceId);
+      return addVoiceIntro("You are a helpful AI assistant.", voiceId, agentTitle);
     }
     
-    // Replace [AI Agent Name] with the actual voice name in the custom prompt
-    const voice = voices.find(v => v.id === voiceId);
-    if (!voice) return customPrompt;
-    
-    const voiceName = voice.label.split('-')[0];
-    const promptWithName = customPrompt.replace(/\[AI Agent Name\]/g, voiceName);
-    
-    return `${voice.introduction}\n\n${promptWithName}`;
+    return addVoiceIntro(customPrompt, voiceId, agentTitle);
   }
 };
 
