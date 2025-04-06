@@ -1,4 +1,4 @@
-import { voices } from "../config/voices";
+import { voices, addVoiceIntro } from "../config/voices";
 
 // Helper function to add voice introduction to a prompt
 const addVoiceIntro = (prompt: string, voiceId: string): string => {
@@ -207,7 +207,10 @@ const policyRenewalBase = `**Role:** AI-powered insurance agent specializing in 
 
 // Export functions that generate voice-specific prompts
 export const insurancePrompts = {
-  getPolicyInformationPrompt: (voiceId: string) => addVoiceIntro(policyInformationBase, voiceId),
-  getHealthClaimPrompt: (voiceId: string) => addVoiceIntro(healthClaimBase, voiceId),
-  getPolicyRenewalPrompt: (voiceId: string) => addVoiceIntro(policyRenewalBase, voiceId)
+  getPolicyInformationPrompt: (voiceId: string, agentTitle?: string) => 
+    addVoiceIntro(policyInformationBase, voiceId, agentTitle),
+  getHealthClaimPrompt: (voiceId: string, agentTitle?: string) => 
+    addVoiceIntro(healthClaimBase, voiceId, agentTitle),
+  getPolicyRenewalPrompt: (voiceId: string, agentTitle?: string) => 
+    addVoiceIntro(policyRenewalBase, voiceId, agentTitle)
 }; 

@@ -374,26 +374,30 @@ const Home: React.FC = () => {
 
   // Helper function to get prompt key from agent title
   const getPromptKey = (agentTitle: string): string | null => {
-    switch (agentTitle) {
-      case "Health insurance advisor":
+    if (!agentTitle) return null;
+    
+    // Normalize the agent title by converting to lowercase for comparison
+    const normalizedTitle = agentTitle.toLowerCase();
+    
+    switch (normalizedTitle) {
+      case "health insurance advisor":
         return "getPolicyInformationPrompt";
-      case "Life insurance advisor":
+      case "life insurance advisor":
         return "getHealthClaimPrompt";
-      case "Hospital receptionist":
+      case "hospital receptionist":
         return "getAppointmentBookingPrompt";
-      case "Diagnostic report advisor":
+      case "diagnostic report advisor":
         return "getDiagnosticReportPrompt";
-      case "Customer relations executive":
+      case "customer relations executive":
+      case "customer support executive":
         return "getCustomerSupportPrompt";
-      case "Customer support executive":
-        return "getCustomerSupportPrompt";
-      case "D2C Support Agent":
+      case "d2c support agent":
+      case "lifestyle solution executive":
         return "getLifestyleSupportPrompt";
-      case "Lifestyle Solution Executive":
-        return "getLifestyleSupportPrompt";
-      case "Customise your agent":
+      case "customise your agent":
         return "customPrompt";
       default:
+        console.warn(`No prompt key found for agent: "${agentTitle}"`);
         return null;
     }
   };
