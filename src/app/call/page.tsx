@@ -29,7 +29,7 @@ function CallContent() {
     callEndedRef.current = true;
     console.log("Cleaning up call resources");
     
-    // Create a promise that will resolve after a timeout to ensure we don't hang
+    // Create a promise  that will resolve after a timeout to ensure we don't hang
     const timeoutPromise = new Promise(resolve => {
       setTimeout(() => {
         console.log("Cleanup timed out, forcing cleanup");
