@@ -380,22 +380,33 @@ const Home: React.FC = () => {
     const normalizedTitle = agentTitle.toLowerCase();
     
     switch (normalizedTitle) {
+      // Insurance prompts
       case "health insurance advisor":
         return "getPolicyInformationPrompt";
       case "life insurance advisor":
         return "getHealthClaimPrompt";
+      
+      // Healthcare prompts
       case "hospital receptionist":
         return "getAppointmentBookingPrompt";
       case "diagnostic report advisor":
         return "getDiagnosticReportPrompt";
+      
+      // Aviation prompts
       case "customer relations executive":
       case "customer support executive":
         return "getCustomerSupportPrompt";
+      
+      // Miscellaneous prompts
       case "d2c support agent":
+        return "getD2CSupportPrompt";
       case "lifestyle solution executive":
         return "getLifestyleSupportPrompt";
+      
+      // Custom prompt
       case "customise your agent":
         return "customPrompt";
+      
       default:
         console.warn(`No prompt key found for agent: "${agentTitle}"`);
         return null;

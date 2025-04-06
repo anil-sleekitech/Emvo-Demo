@@ -62,7 +62,7 @@ const getAgentIcon = (title: string): StaticImageData => {
   }
 };
 
-type PromptFunction = (voiceId: string, agentTitle?: string) => string;
+type PromptFunction = (voiceId: string, agentTitle?: string, customPrompt?: string) => string;
 
 const PlaygroundContent: React.FC<PlaygroundContentProps> = ({
   selectedIndustry,
