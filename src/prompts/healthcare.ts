@@ -1,19 +1,19 @@
 import { voices } from "../config/voices";
-import { addVoiceIntro } from "../config/voices";
+// import { addVoiceIntro } from "../config/voices";
 
 // Helper function to add voice introduction to a prompt
 const addVoiceIntro = (prompt: string, voiceId: string, agentTitle?: string): string => {
-  const voice = voices.find(v => v.id === voiceId);
-  if (!voice) return prompt;
-  
-  // Extract the name part from the voice label (e.g., "Richard" from "Richard-English")
-  const voiceName = voice.label.split('-')[0];
-  
-  // Replace [AI Agent Name] with the actual voice name
-  const promptWithName = prompt.replace(/\[AI Agent Name\]/g, voiceName);
-  
-  return `${voice.introduction}\n\nYou are ${voiceName}, a ${agentTitle || "helpful assistant"}.\n\n${promptWithName}`;
-};
+   const voice = voices.find(v => v.id === voiceId);
+   if (!voice) return prompt;
+   
+   // Extract the name part from the voice label (e.g., "Richard" from "Richard-English")
+   const voiceName = voice.label.split('-')[0];
+   
+   // Replace [AI Agent Name] with the actual voice name
+   const promptWithName = prompt.replace(/\[AI Agent Name\]/g, voiceName).replace(/\[AI Agent Name\]\./g, `${voiceName}.`);
+   
+   return `${voice.introduction}\n\nYou are ${voiceName}, a ${agentTitle || "helpful assistant"}.\n\n${promptWithName}`;
+ };
 
 // Base prompts without voice introductions
 const appointmentBookingBase = `**Role:** AI-powered healthcare assistant specializing in appointment booking, helping patients schedule, reschedule, or cancel medical appointments with the right healthcare providers.

@@ -12,11 +12,7 @@ import krishnaImage from "../assets/krishna.png";
 import riyaImage from "../assets/riya.png";
 import anjaliImage from "../assets/anjali.png";
 import miscellaneousIcon from "../assets/miscell.png";
-import shriviImage from "../assets/Shrivi.png";
-import salmaImage from "../assets/salma.png";
-import rajuImage from "../assets/Raju.png";
 import aakashImage from "../assets/aakash.png";
-import anikaImage from "../assets/anika.png";
 
 // Import agent icons
 import heartIcon from '../assets/heart.png';
@@ -159,15 +155,11 @@ const industries: Industries = {
   },
 };
 
-  const voices = [
-  { id: "riya", name: "Riya", avatar: riyaImage },
-  { id: "shrivi", name: "Shrivi", avatar: shriviImage },
-  { id: "anjali", name: "Anjali", avatar: anjaliImage },
+const voices = [
   { id: "krishna", name: "Krishna", avatar: krishnaImage },
-  { id: "raju", name: "Raju", avatar: rajuImage },
+  { id: "riya", name: "Riya", avatar: riyaImage },
+  { id: "anjali", name: "Anjali", avatar: anjaliImage },
   { id: "aakash", name: "Aakash", avatar: aakashImage },
-  { id: "anika", name: "Anika", avatar: anikaImage },
-  { id: "salma", name: "Salma", avatar: salmaImage },
 ];
 
 // Helper function to get voice ID from name
@@ -180,20 +172,12 @@ const getVoiceId = (voiceName: string | null): string | null => {
   switch (voiceConfig.name.toLowerCase()) {
     case "riya":
       return "d17917ec-fd98-4c50-8c83-052c575cbf3e"; // Riya - English Indian
-    case "shrivi":
-      return "a0998448-6810-4b44-bc90-ccb69d2a26f5"; // Shrivi - Tamil, English Indian
     case "anjali":
       return "ebae2397-0ba1-4222-9d5b-5313ddeb04b5"; // Anjali - Hinglish
     case "krishna":
       return "9f6262e3-1b03-4a0b-9921-50b9cff66a43"; // Krishna - Hinglish
-    case "salma":
-      return "9d7bc57b-2e1c-4622-acb7-39c4f32dacfb"; // Salma - Arabic, English (Dubai Accent)
-    case "raju":
-      return "7c125579-a8b9-46ba-887b-60e4f0449e5d"; // Raju - Hinglish
     case "aakash":
       return "82c9728c-e0fe-4bc2-b7a3-03bb271fafb9"; // Aakash - English Indian
-    case "anika":
-      return "44504e63-59c5-4f69-9340-423231c79a03"; // Anika - English Indian
     default:
       return null;
   }
@@ -211,7 +195,7 @@ const Home: React.FC = () => {
   const [userData, setUserData] = useState<{
     name: string;
     email: string;
-    designation: string;
+    // designation: string;
     feedback?: {
       naturalness: string;
       emotionalIntelligence: string;
@@ -251,7 +235,12 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleUserInfoSubmit = async (userInfo: { name: string; email: string; designation: string; customPrompt?: string }) => {
+  const handleUserInfoSubmit = async (userInfo: { 
+    name: string; 
+    email: string; 
+    // designation: string; 
+    customPrompt?: string 
+  }) => {
     setIsLoading(true);
     try {
       // Store user info
@@ -269,7 +258,7 @@ const Home: React.FC = () => {
       }
       
       // Determine which prompt to use based on industry and agent
-    let systemPrompt = "";
+      let systemPrompt = "";
     
       if (selectedIndustry === "Custom") {
         // Use custom prompt
@@ -551,7 +540,7 @@ const Home: React.FC = () => {
       const completeData = {
         name: userData.name,
         email: userData.email,
-        designation: userData.designation || "",
+        // designation: userData.designation || "",
         naturalness: feedback.naturalness,
         emotionalIntelligence: feedback.emotionalIntelligence,
         businessInterest: feedback.businessInterest,
@@ -623,7 +612,7 @@ const Home: React.FC = () => {
     }
     
     if (callState.transcripts.length > 0) {
-  return (
+      return (
         <>
           <CallSummary
             agentName={callState.agentName}

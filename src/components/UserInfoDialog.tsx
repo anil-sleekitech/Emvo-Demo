@@ -6,7 +6,7 @@ interface UserInfoDialogProps {
   onSubmit: (userInfo: {
     name: string;
     email: string;
-    designation: string;
+    // designation: string;
     customPrompt?: string;
   }) => void;
   selectedAgent: string | null;
@@ -16,7 +16,7 @@ const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubm
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    designation: '',
+    // designation: '',
     customPrompt: '',
   });
 
@@ -68,7 +68,7 @@ const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubm
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-white mb-2">Your designation</label>
               <input
                 type="text"
@@ -78,7 +78,7 @@ const UserInfoDialog: React.FC<UserInfoDialogProps> = ({ isOpen, onClose, onSubm
                 className="w-full px-4 py-3 bg-[#150C29] rounded-lg text-white border border-purple-500/30 focus:outline-none focus:border-purple-500"
                 required
               />
-            </div>
+            </div> */}
 
             {isCustomAgent && (
               <div>
