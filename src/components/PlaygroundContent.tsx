@@ -41,10 +41,10 @@ interface PlaygroundContentProps {
 // Update the industries object to include agent icons
 const getAgentIcon = (title: string): StaticImageData => {
   switch (title.toLowerCase()) {
+    case "general insurance advisor":
+      return lifeInsuIcon;
     case "health insurance advisor":
       return heartIcon;
-    case "life insurance advisor":
-      return lifeInsuIcon;
     case "hospital receptionist":
       return hospitalIcon;
     case "diagnostic report advisor":

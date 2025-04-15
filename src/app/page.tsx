@@ -62,10 +62,10 @@ type Industries = Record<IndustryType, Industry>;
 // Helper function to get agent icon
 const getAgentIcon = (title: string): StaticImageData => {
   switch (title.toLowerCase()) {
+    case "general insurance advisor":
+      return lifeInsuIcon;
     case "health insurance advisor":
       return heartIcon;
-    case "life insurance advisor":
-      return lifeInsuIcon;
     case "hospital receptionist":
       return hospitalIcon;
     case "diagnostic report advisor":
@@ -82,15 +82,16 @@ const industries: Industries = {
     icon: healthIcon,
     agents: [
       {
+        title: "General Insurance Advisor",
+        description: "A seamless multi-agent system for choosing general insurance",
+        icon: getAgentIcon("General insurance advisor"),
+      },
+      {
         title: "Health Insurance Advisor",
         description: "Get policy details, coverage info, and answers instantly",
         icon: getAgentIcon("Health insurance advisor"),
       },
-      {
-        title: "Life Insurance Advisor",
-        description: "A seamless multi-agent system for choosing life insurance",
-        icon: getAgentIcon("Life insurance advisor"),
-      },
+     
     ],
   },
   Healthcare: {
@@ -170,12 +171,12 @@ const getVoiceId = (voiceName: string | null): string | null => {
   
   // Map the voice name to its corresponding ID
   switch (voiceConfig.name.toLowerCase()) {
+    case "krishna":
+      return "9f6262e3-1b03-4a0b-9921-50b9cff66a43"; // Krishna - Hinglish
     case "riya":
       return "d17917ec-fd98-4c50-8c83-052c575cbf3e"; // Riya - English Indian
     case "anjali":
       return "ebae2397-0ba1-4222-9d5b-5313ddeb04b5"; // Anjali - Hinglish
-    case "krishna":
-      return "9f6262e3-1b03-4a0b-9921-50b9cff66a43"; // Krishna - Hinglish
     case "aakash":
       return "82c9728c-e0fe-4bc2-b7a3-03bb271fafb9"; // Aakash - English Indian
     default:
@@ -370,9 +371,9 @@ const Home: React.FC = () => {
     
     switch (normalizedTitle) {
       // Insurance prompts
-      case "health insurance advisor":
+      case "general insurance advisor":
         return "getPolicyInformationPrompt";
-      case "life insurance advisor":
+      case "health insurance advisor":
         return "getHealthClaimPrompt";
       
       // Healthcare prompts
