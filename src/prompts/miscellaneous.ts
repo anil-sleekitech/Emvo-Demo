@@ -3,16 +3,16 @@ import { voices } from "../config/voices";
 
 // Helper function to add voice introduction to a prompt
 const addVoiceIntro = (prompt: string, voiceId: string, agentTitle?: string): string => {
-  const voice = voices.find(v => v.id === voiceId);
-  if (!voice) return prompt;
-  
-  // Extract the name part from the voice label (e.g., "Richard" from "Richard-English")
-  const voiceName = voice.label.split('-')[0];
-  
-  // Replace [AI Agent Name] with the actual voice name
-  const promptWithName = prompt.replace(/\[AI Agent Name\]/g, voiceName);
-  
-  return `${voice.introduction}\n\nYou are ${voiceName}, a ${agentTitle || "helpful assistant"}.\n\n${promptWithName}`;
+    const voice = voices.find(v => v.id === voiceId);
+    if (!voice) return prompt;
+
+    // Extract the name part from the voice label (e.g., "Richard" from "Richard-English")
+    const voiceName = voice.label.split('-')[0];
+
+    // Replace [AI Agent Name] with the actual voice name
+    const promptWithName = prompt.replace(/\[AI Agent Name\]/g, voiceName);
+
+    return `${voice.introduction}\n\nYou are ${voiceName}, a ${agentTitle || "helpful assistant"}.\n\n${promptWithName}`;
 };
 
 // Base prompts without voice introductions
@@ -355,12 +355,15 @@ Agent: "Is there anything else I can help you with today?"
     - Go to the relevant step based on their query (enrolment, KYC, Bank Update).
 - If the mason does not have further questions:
     - Agent: "Thank you for choosing HR Johnson's Mason Loyalty Program. Have a wonderful day ahead!"
-    - Disconnect call using 'hangup'`;
+    - Disconnect call using 'hangup'
+    
+**Tool Usage**
+- When the call naturally wraps up, use the 'hangUp' tool to end the call.`;
 
 // Export functions that generate voice-specific prompts
 export const miscellaneousPrompts = {
-  getD2CSupportPrompt: (voiceId: string, agentTitle?: string) => 
-    addVoiceIntro(d2cSupportBase, voiceId, agentTitle),
-  getLifestyleSupportPrompt: (voiceId: string, agentTitle?: string) => 
-    addVoiceIntro(lifestyleSupportBase, voiceId, agentTitle)
+    getD2CSupportPrompt: (voiceId: string, agentTitle?: string) =>
+        addVoiceIntro(d2cSupportBase, voiceId, agentTitle),
+    getLifestyleSupportPrompt: (voiceId: string, agentTitle?: string) =>
+        addVoiceIntro(lifestyleSupportBase, voiceId, agentTitle)
 }; 
