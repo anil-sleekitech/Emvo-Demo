@@ -449,6 +449,7 @@ const Home: React.FC = () => {
       
       // Leave the call if session exists
       const leaveCallPromise = async () => {
+        
         if (session) {
           try {
             session.removeEventListener("status", () => { });

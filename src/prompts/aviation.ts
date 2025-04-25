@@ -244,7 +244,6 @@ const loyaltyProgramBase = `**Role:** AI-powered aviation loyalty program specia
 
 **Tool Usage**
 - When the call naturally wraps up, use the 'hangUp' tool to end the call.`;
-
 // Export functions that generate voice-specific prompts
 export const aviationPrompts = {
   getCustomerSupportPrompt: (voiceId: string) => addVoiceIntro(customerSupportBase, voiceId),
