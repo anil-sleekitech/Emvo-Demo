@@ -236,40 +236,40 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleUserInfoSubmit = async (userInfo: { 
-    name: string; 
-    email: string; 
+  const handleUserInfoSubmit = async (userInfo: {
+    name: string;
+    email: string;
     // designation: string; 
-    customPrompt?: string 
+    customPrompt?: string
   }) => {
     setIsLoading(true);
     try {
       // Store user info
       setUserData(userInfo);
-    
-    // Get current time
-    const now = new Date();
-    const currentTime = now.toLocaleTimeString();
-    
+
+      // Get current time
+      const now = new Date();
+      const currentTime = now.toLocaleTimeString();
+
       // Get the voice ID from the selected voice name
       const voiceId = getVoiceId(selectedVoice);
       if (!voiceId) {
         toast.error("Invalid voice selection");
         return;
       }
-      
+
       // Determine which prompt to use based on industry and agent
       let systemPrompt = "";
-    
+
       if (selectedIndustry === "Custom") {
         // Use custom prompt
         systemPrompt = customPrompt;
       } else if (selectedIndustry && selectedAgent) {
-      // Get the appropriate service prompts
+        // Get the appropriate service prompts
         const industry = selectedIndustry.toLowerCase() as keyof typeof prompts;
         const servicePrompts = prompts[industry];
         const promptKey = getPromptKey(selectedAgent);
-        
+
         if (promptKey && servicePrompts && promptKey in servicePrompts) {
           const promptFunction = servicePrompts[promptKey as keyof typeof servicePrompts] as PromptFunction;
           systemPrompt = promptFunction(voiceId);
@@ -279,32 +279,35 @@ const Home: React.FC = () => {
       // Add customer name to the beginning of the prompt
       if (userInfo.name.trim()) {
         systemPrompt = `Customer Name: ${userInfo.name}\n\n${systemPrompt}`;
-    }
+      }
 
-    // Log the data being sent for debugging
-    console.log("Sending data:", {
+      // Log the data being sent for debugging
+      console.log("Sending data:", {
         service: selectedIndustry?.toLowerCase(),
         voice: voiceId,
         agent: selectedAgent,
-      time: currentTime,
+        time: currentTime,
         customerName: userInfo.name,
-      systemPrompt
-    });
+        systemPrompt
+      });
       const response = await fetch(
-     
+
         "https://fc57nva4po6cjo22zd3o7u7mcy0jpzta.lambda-url.ap-south-1.on.aws/",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ 
-            service: selectedIndustry?.toLowerCase(), 
+          body: JSON.stringify({
+            service: selectedIndustry?.toLowerCase(),
             voice: voiceId,
-            agent: selectedAgent, 
-            time: currentTime, 
+            agent: selectedAgent,
+            time: currentTime,
             customerName: userInfo.name,
-            systemPrompt 
+            systemPrompt,
+            selectedTools: [
+              { toolName: 'hangUp' }
+            ]
           }),
         }
       );
@@ -318,7 +321,7 @@ const Home: React.FC = () => {
       if (!data.callId) {
         throw new Error("No call ID returned from server");
       }
-      
+
       // Store the call ID
       setCurrentCallId(data.callId);
 
@@ -331,10 +334,14 @@ const Home: React.FC = () => {
         agentName: selectedAgent || ''
       }));
 
+      if (session) {
+        session.leaveCall(); // Clean up any existing session
+      }
+
       // Initialize call session
       const newSession = new UltravoxSession();
       setSession(newSession);
-      
+
       try {
         // Get user media
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -444,8 +451,11 @@ const Home: React.FC = () => {
       const leaveCallPromise = async () => {
         if (session) {
           try {
+            session.removeEventListener("status", () => { });
+            session.removeEventListener("tool", () => { });
             await session.leaveCall();
             console.log("Call left successfully");
+            setSession(null);
           } catch (error) {
             console.error("Error leaving call:", error);
           }
